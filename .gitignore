@@ -1,0 +1,12 @@
+*.cfg
+.stack-work/
+.vscode
+.history
+*.db
+*.bak
+*.dump-splices
+*.swp
+*.log
+*.swo
+*.html
+quickfix

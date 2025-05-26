@@ -1,0 +1,81 @@
+name:                correct-me
+version:             0.1.0.0
+github:              "githubuser/correct-me"
+license:             BSD-3-Clause
+author:              "gKrokod"
+maintainer:          "@ofspb"
+copyright:           "2025 gKrokod"
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+default-extensions:
+- OverloadedStrings
+- DeriveGeneric
+- LambdaCase
+- TypeApplications
+
+description:         Please see the README on GitHub at <https://github.com/githubuser/correct-me#readme>
+
+dependencies:
+- base >= 4.7
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-export-lists
+- -Wmissing-home-modules
+- -Wpartial-fields
+- -Wredundant-constraints
+
+library:
+  source-dirs: src
+  dependencies:
+    - text
+    - bytestring
+    - persistent-postgresql
+    - aeson
+    - persistent
+    - time
+    - template-haskell
+    - esqueleto
+    - wai
+    - http-types
+    - mtl
+    # - servant
+    - warp
+    - servant-server
+
+executables:
+  correct-me-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - correct-me
+    - warp
+    - wai
+    - text
+    # - servant
+    - servant-server
+    - aeson
+
+tests:
+  correct-me-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - correct-me
+    - hspec
+    - QuickCheck
+    - text
