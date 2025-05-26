@@ -69,7 +69,7 @@ instance FromHttpApiData FilterBy where
   parseQueryParam txt = case toLower txt of
                           "notapproved" -> Right NotApproved
                           "ownspells" -> Right OwnSpells
-                          _ -> Left "Invalid SortBy value (agreed or author) <- FromHttpApiData instance"
+                          _ -> Left "Invalid FilterBy value (NotApproved or OwnSpells) <- FromHttpApiData instance"
 
 instance ToHttpApiData FilterBy where
   toQueryParam NotApproved = "notapproved" 
