@@ -65,6 +65,7 @@ executables:
     - warp
     - wai
     - text
+    - time
     - servant-server
     - aeson
 
