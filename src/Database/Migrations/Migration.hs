@@ -20,6 +20,7 @@ type Version = Int
 migrationEngine :: ConnectionString -> IO ()
 migrationEngine pginfo = do
   lastMigration <- isMigrateTable pginfo
+  print lastMigration
   let migrationPlan' = mapMaybe (predicate lastMigration) migrationPlan
   runDataBaseWithOutLog pginfo $ do
     mapM_ applyMigrate migrationPlan'
@@ -30,6 +31,6 @@ migrationEngine pginfo = do
       time <- liftIO getCurrentTime
       insert_ (MigrateTable {migrateTableVersion = version, migrateTableDescription = description, migrateTableTime = time})
 
-    predicate :: Either PersistentSqlException (Maybe Version) -> MyMigration -> Maybe MyMigration
+    -- predicate :: Either PersistentSqlException (Maybe Version) -> MyMigration -> Maybe MyMigration
     predicate (Right (Just num)) (MkMigration {..}) | num >= version = Nothing
     predicate _ m = Just m

@@ -52,6 +52,7 @@ library:
     - warp
     - servant-server
     - monad-logger
+    - http-conduit
 
 executables:
   correct-me-exe:
@@ -64,6 +65,7 @@ executables:
     dependencies:
     - correct-me
     - warp
+    - persistent-postgresql
     - wai
     - text
     - time

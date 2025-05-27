@@ -14,10 +14,10 @@
 {-# OPTIONS_GHC -ddump-splices #-}
 {-# OPTIONS_GHC -ddump-to-file #-}
 
-module Database.Migrations.Migrationv0 (migrateVer0, User (..), Password (..), Category (..), News (..), Image (..), ImageBank (..), Unique (..), EntityField (..)) where
+module Database.Migrations.Migrationv0  where
 
 import Data.Aeson (FromJSON (..), ToJSON (..))
-import qualified Data.Text as T
+import Data.Text (Text)
 import Data.Time (UTCTime (..))
 import Database.Migrations.Type (MyMigration (..), createMigrateTable)
 import Database.Persist.Class (EntityField (..), Unique (..))
@@ -29,41 +29,50 @@ PTH.share
   [PTH.mkPersist PTH.sqlSettings, PTH.mkEntityDefList "createTablesForEntity"]
   [PTH.persistLowerCase|
  User sql=users
-  name T.Text
-  login T.Text
-  passwordId PasswordId
-  created UTCTime
-  isAdmin Bool
-  isPublisher Bool
-  UniqueUserLogin login
-  deriving Eq Show
- Password sql=passwords
-   quasiPassword T.Text
-   deriving Eq Show
- Category sql=categories
-  label T.Text
-  parent CategoryId Maybe
-  UniqueCategoryLabel label
-  deriving Eq Show 
- News sql=news
-  title T.Text
-  created UTCTime
-  userId UserId
-  categoryId CategoryId
-  content T.Text
-  isPublish Bool
-  UniqueNews title
-  deriving Eq Show
- Image sql=images
-  header T.Text
-  base64 T.Text
+  name Text
+  UniqueUserName name
   deriving Eq Show Generic FromJSON ToJSON
- ImageBank sql=images_bank
-  newsId NewsId
-  imageId ImageId
-  Primary newsId imageId
-  deriving Eq Show
+ Phrase sql=phrases
+  text Text
+  userId UserId
+  spellingId SpellingId
+  UniquePhraseText text
+  deriving Eq Show Generic FromJSON ToJSON
+ Spelling sql=spelling
+  errors Text 
+  deriving Eq Show Generic FromJSON ToJSON
+ Spell sql=spells
+  phraseId PhraseId
+  isApproved Bool
+  deriving Eq Show Generic FromJSON ToJSON
 |]
 
 migrateVer0 :: MyMigration
 migrateVer0 = MkMigration {version = 0, description = "create all tables", content = migrateModels (createMigrateTable <> createTablesForEntity)}
+
+
+-- data Phrase = MkPhrase {
+--   text :: Text,
+--   idUser :: (),
+--   idSpellResult :: () -- [SpellResult]
+--                        }
+--
+-- data Spell' = MkSpell {
+--   idPhrase :: (),
+--   isApproved :: Bool
+--                       }
+--
+-- data User = MkUser {
+--   name :: Text
+--                    }
+-- data SpellResult = MkSpellResult {
+--   code :: Int,
+--   pos :: Int,
+--   row :: Int,
+--   col :: Int,
+--   len :: Int,
+--   word :: Text,
+--   s :: [Text]
+--                                }
+--   deriving stock (Show, Generic)
+--   deriving anyclass (ToJSON, FromJSON)

@@ -12,9 +12,11 @@ import Database.Verb (runDataBaseWithOutLog)
 
 type Version = Int
 
-isMigrateTable :: ConnectionString -> IO (Either PersistentSqlException (Maybe Version))
+isMigrateTable :: ConnectionString -> IO (Either SomeException (Maybe Version))
+-- isMigrateTable :: ConnectionString -> IO (Either PersistentSqlException (Maybe Version))
 isMigrateTable pginfo =
-  try @PersistentSqlException (runDataBaseWithOutLog pginfo fetchAction)
+  -- try @PersistentSqlException (runDataBaseWithOutLog pginfo fetchAction)
+  try @SomeException (runDataBaseWithOutLog pginfo fetchAction)
   where
     fetchAction :: (MonadIO m) => SqlPersistT m (Maybe Version)
     fetchAction = do

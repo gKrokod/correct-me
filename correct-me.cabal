@@ -60,6 +60,7 @@ library
     , base >=4.7
     , bytestring
     , esqueleto
+    , http-conduit
     , http-types
     , monad-logger
     , mtl
@@ -97,6 +98,7 @@ executable correct-me-exe
     , bytestring
     , correct-me
     , http-conduit
+    , persistent-postgresql
     , servant-server
     , text
     , time

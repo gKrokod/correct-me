@@ -30,19 +30,3 @@ instance ToHttpApiData FilterBy where
   toQueryParam NotApproved = "notapproved" 
   toQueryParam OwnSpells = "ownspells" 
 
-
-
-data Phrase = MkPhrase {
-  text :: Text,
-  idUser :: (),
-  idSpellResult :: () -- [SpellResult]
-                       }
-
-data Spell' = MkSpell {
-  idPhrase :: (),
-  isApproved :: Bool
-                      }
-
-data User = MkUser {
-  name :: Text
-                   }
