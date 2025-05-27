@@ -26,8 +26,19 @@ source-repository head
 library
   exposed-modules:
       Api
+      Database.Api
+      Database.Data.FillTables
+      Database.Migrations.Migration
+      Database.Migrations.MigrationPlan
+      Database.Migrations.Migrationv0
+      Database.Migrations.Migrationv1
+      Database.Migrations.Type
+      Database.Queries.MigrateTable
+      Database.Queries.News
+      Database.Verb
       Lib
       Server
+      Yandex
   other-modules:
       Paths_correct_me
   autogen-modules:
@@ -50,6 +61,7 @@ library
     , bytestring
     , esqueleto
     , http-types
+    , monad-logger
     , mtl
     , persistent
     , persistent-postgresql

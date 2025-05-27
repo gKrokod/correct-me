@@ -12,13 +12,6 @@ import Data.Aeson (ToJSON, FromJSON)
 
 type API = "spell" :> QueryParam "filterby" FilterBy :> Get '[JSON] [Spell]
 
-data Sp = Sp {
-  spellText :: Text, --(approved?) -- spell = Main Text [Text]
-  isApproved :: Bool,
-  author :: Text, -- UserName
-  var :: (Text, [(Text,[Text])]) -- (phrase [(Word of phrase, [Maybe Word)])
-             }
-
 data Spell = Spell Text
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -40,9 +33,9 @@ instance ToHttpApiData FilterBy where
 
 
 data Phrase = MkPhrase {
-  idUser :: (),
   text :: Text,
-  idError :: ()
+  idUser :: (),
+  idSpellResult :: () -- [SpellResult]
                        }
 
 data Spell' = MkSpell {
