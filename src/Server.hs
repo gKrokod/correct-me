@@ -1,49 +1,88 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeOperators #-}
+-- {-# LANGUAGE FlexibleContexts #-}
 module Server where
+
+import Api
 
 import Servant
 import Network.Wai.Handler.Warp (run)
-import Api
-import Control.Monad.IO.Class (liftIO)
-import Data.IORef
 
--- Начальные данные
-initialBooks :: [Book]
-initialBooks = [ Book 1 "Haskell Programming" "John Doe"
-               , Book 2 "Learn You a Haskell" "Miran Lipovača"
-               ]
+-- on yandex {}
+-- слюжба занятости
+-- вада
+-- вариант нармы
+--[
+--   {
+--     "code": 1,
+--     "pos": 0,
+--     "row": 0,
+--     "col": 0,
+--     "len": 6,
+--     "word": "слюжба",
+--     "s": [
+--       "служба",
+--       "службы",
+--       "службе",
+--       "службу"
+--     ]
+--   },
+--   {
+--     "code": 1,
+--     "pos": 32,
+--     "row": 2,
+--     "col": 8,
+--     "len": 5,
+--     "word": "нармы",
+--     "s": [
+--       "нормы"
+--     ]
+--   }
+-- ]
 
--- Обработчики маршрутов
-server :: IORef [Book] -> Server BookAPI
-server booksRef =
-       getBooks
-  :<|> getBookById
-  :<|> addBook
-  :<|> deleteBook
-  where
-    -- Возвращает список книг
-    getBooks = liftIO $ readIORef booksRef
 
-    -- Возвращает книгу по ID
-    getBookById bid = do
-      books <- liftIO $ readIORef booksRef
-      case filter ((== bid) . bookId) books of
-        [book] -> return book
-        _      -> throwError err404
+spells :: [Spell]
+spells = [Spell "one", Spell "two", Spell "three"]
 
-    -- Добавляет новую книгу
-    addBook newBook = liftIO $ do
-      modifyIORef booksRef (newBook :)
-      return newBook
 
-    -- Удаляет книгу по ID
-    deleteBook bid = liftIO $ do
-      modifyIORef booksRef (filter ((/= bid) . bookId))
-      return NoContent
+--handler сюда прикrутить свой
+-- :: Handler .. -> Server API
+serverSp :: () -> Server API
+serverSp _ = handler
+  where handler :: Maybe FilterBy -> Handler [Spell]
+        handler Nothing = return spells
+        handler (Just NotApproved) = return (take 1 spells)
+        handler (Just OwnSpells) = return (drop 2 spells)
 
--- Запуск сервера
-startApp :: IO ()
-startApp = do
-  booksRef <- newIORef initialBooks
-  putStrLn "Server running on http://localhost:8080"
-  run 8080 $ serve (Proxy :: Proxy BookAPI) (server booksRef)
+spellServer = serve @API Proxy $ serverSp ()
+
+-- on yandex {}
+-- слюжба занятости
+-- вада
+-- вариант нармы
+--[
+--   {
+--     "code": 1,
+--     "pos": 0,
+--     "row": 0,
+--     "col": 0,
+--     "len": 6,
+--     "word": "слюжба",
+--     "s": [
+--       "служба",
+--       "службы",
+--       "службе",
+--       "службу"
+--     ]
+--   },
+--   {
+--     "code": 1,
+--     "pos": 32,
+--     "row": 2,
+--     "col": 8,
+--     "len": 5,
+--     "word": "нармы",
+--     "s": [
+--       "нормы"
+--     ]
+--   }
+-- ]
