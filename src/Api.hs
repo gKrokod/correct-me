@@ -1,11 +1,11 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 
 module Api where
 
 import Servant
 import Data.Text (Text, toLower)
-import Data.Text (Text)
 import GHC.Generics (Generic)
 import Data.Aeson (ToJSON, FromJSON)
 
@@ -36,3 +36,20 @@ instance FromHttpApiData FilterBy where
 instance ToHttpApiData FilterBy where
   toQueryParam NotApproved = "notapproved" 
   toQueryParam OwnSpells = "ownspells" 
+
+
+
+data Phrase = MkPhrase {
+  idUser :: (),
+  text :: Text,
+  idError :: ()
+                       }
+
+data Spell' = MkSpell {
+  idPhrase :: (),
+  isApproved :: Bool
+                      }
+
+data User = MkUser {
+  name :: Text
+                   }

@@ -82,7 +82,9 @@ executable correct-me-exe
   build-depends:
       aeson
     , base >=4.7
+    , bytestring
     , correct-me
+    , http-conduit
     , servant-server
     , text
     , time

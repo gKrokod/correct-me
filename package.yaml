@@ -68,6 +68,8 @@ executables:
     - time
     - servant-server
     - aeson
+    - http-conduit
+    - bytestring
 
 tests:
   correct-me-test:
