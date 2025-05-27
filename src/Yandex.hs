@@ -9,9 +9,10 @@ import Data.Text (Text)
 
 import Data.Aeson (FromJSON, ToJSON, eitherDecode)
 import GHC.Generics (Generic)
+import qualified Data.ByteString.Lazy as L
 
 
-data SpellResult = MkSpellResult {
+data SpellError = MkSpellError {
   code :: Int,
   pos :: Int,
   row :: Int,
@@ -22,6 +23,8 @@ data SpellResult = MkSpellResult {
                                }
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+type SpellResult = [SpellError]
 
   -- startApp
 checkError :: IO ()
@@ -36,7 +39,10 @@ checkError = do
     Right response -> do
       let status = getResponseStatusCode response
       when (404 == status || status == 301) (putStrLn "Error! Bot Server 404 or 301")
-      let body = eitherDecode @[SpellResult] $ getResponseBody response
+      let body = eitherDecode @SpellResult $ getResponseBody response
+      case body of
+        Right b -> print body  --L.writeFile "cfg/data.cfg" (getResponseBody response)
+        Left _ -> print "error"
       -- let b' = eitherDecode body :: Either String [SpellResult]
       print body
   print "Hello bro"
@@ -63,6 +69,7 @@ checkError = do
 
 txt1 :: Text
 txt1 = "синхрафазатрон в дубне дубне"
+txt2 = "Some people, when confronted with a problem, think, \"I know, I'll use threads,\" and then two the hav erpoblesms."
 
 buildGetRequest :: Text -> Request
 buildGetRequest txt =

@@ -25,6 +25,7 @@ main = do
   print "hi"
   migrationEngine (connectionString )
   checkError
+  print "by"
 
 connectionString :: ConnectionString
 connectionString =

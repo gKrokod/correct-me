@@ -24,6 +24,23 @@ import Database.Persist.Class (EntityField (..), Unique (..))
 import Database.Persist.TH (migrateModels)
 import qualified Database.Persist.TH as PTH
 import GHC.Generics (Generic)
+import Yandex (SpellResult(..))
+
+-- data SpellResult1 = MkSpellResult {
+--   code :: Int,
+--   pos :: Int,
+--   row :: Int,
+--   col :: Int,
+--   len :: Int,
+--   word :: Text,
+--   s :: [Text]
+--                                }
+--   deriving stock (Show, Generic)
+--   deriving anyclass (ToJSON, FromJSON)
+--
+-- type SpellResults = [SpellResult1]
+
+PTH.derivePersistFieldJSON "SpellResult"
 
 PTH.share
   [PTH.mkPersist PTH.sqlSettings, PTH.mkEntityDefList "createTablesForEntity"]
@@ -39,8 +56,8 @@ PTH.share
   UniquePhraseText text
   deriving Eq Show Generic FromJSON ToJSON
  Spelling sql=spelling
-  errors Text 
-  deriving Eq Show Generic FromJSON ToJSON
+  errors SpellResult 
+  deriving Show Generic FromJSON ToJSON
  Spell sql=spells
   phraseId PhraseId
   isApproved Bool
@@ -50,29 +67,3 @@ PTH.share
 migrateVer0 :: MyMigration
 migrateVer0 = MkMigration {version = 0, description = "create all tables", content = migrateModels (createMigrateTable <> createTablesForEntity)}
 
-
--- data Phrase = MkPhrase {
---   text :: Text,
---   idUser :: (),
---   idSpellResult :: () -- [SpellResult]
---                        }
---
--- data Spell' = MkSpell {
---   idPhrase :: (),
---   isApproved :: Bool
---                       }
---
--- data User = MkUser {
---   name :: Text
---                    }
--- data SpellResult = MkSpellResult {
---   code :: Int,
---   pos :: Int,
---   row :: Int,
---   col :: Int,
---   len :: Int,
---   word :: Text,
---   s :: [Text]
---                                }
---   deriving stock (Show, Generic)
---   deriving anyclass (ToJSON, FromJSON)
