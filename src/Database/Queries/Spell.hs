@@ -15,6 +15,7 @@ import Database.Verb (runDataBaseWithOutLog)
 import Schema 
 import DTO
 -- import Types (Content (..), Label (..), Login (..), Name (..), Title (..), URI_Image (..))
+-- import Database.Migrations.Migrationv0 
 
 type LimitData = Int
 -- data PhraseToWeb = PhraseToWeb
@@ -219,7 +220,43 @@ pullAllSpells connString = do
 --     author :: Text,
 --     revision :: SpellResult
 --   }
--- fetchFullPhrase :: (MonadFail m, MonadIO m) => Int -> SqlPersistT m PhraseToWeb
+fetchFullPhrase :: (MonadFail m, MonadIO m) => Int -> SqlPersistT m PhraseToWeb
+fetchFullPhrase uid = do
+  -- (user : _) <- (fmap . fmap) entityVal fetchUser
+  -- (spelling : _) <- (fmap . fmap) entityVal fetchSpelling
+  -- (partPhrase : _) <- (fmap . fmap) entityVal (get (toSqlKey uid))
+  let fullPhrase =
+        PhraseToWeb undefined undefined undefined
+          -- { undefined 
+            -- author = userName user
+            -- revision = MkName $ spellingRevisions spelling,
+            -- phrase = phrasesText partPhrase
+          -- }
+  pure fullPhrase
+  where
+    -- fetchUser :: (MonadIO m) => SqlPersistT m [Entity User]
+    -- fetchUser = select $ do
+    --   (phrase :& user) <-
+    --     from $
+    --       table @Phrase
+    --         `innerJoin` table @User
+    --           `on` (\(p :& u) -> p ^. UserId ==. (u ^. PhraseUserId))
+    --           -- `on` (\(p :& u) -> p ^. phraseUserId ==. (u ^. UserId))
+    --   -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
+    --   -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
+    --   pure user
+    --
+fetchUser :: (MonadIO m) => SqlPersistT m [Entity User]
+fetchUser = select $ do
+  (phrase :& user) <-
+    from $
+      table @Phrase
+        `innerJoin` table @User
+          `on` (\(p :& u) -> p ^. PhraseUserId ==. (u ^. UserId))
+  -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
+  -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
+  pure user
+
 -- fetchFullNews :: (MonadFail m, MonadIO m) => LimitData -> Limit -> Title -> SqlPersistT m NewsOut
 -- fetchFullNews configLimit userLimit title = do
 --   (label : _) <- (fmap . fmap) entityVal fetchLabel
