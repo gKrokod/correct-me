@@ -36,7 +36,6 @@ library
       Database.Queries.MigrateTable
       Database.Queries.News
       Database.Verb
-      Lib
       Server
       Yandex
   other-modules:

@@ -10,7 +10,7 @@ migrateVer1 = MkMigration {version = 1, description = "add test data", content =
   where
     action = runSqlCommand $ do
       insertMany_ [user1, user2,user3,user4]
-      insertMany_ [spe1,spe2]
-      insertMany_ [phrase1, phrase2]
-      insertMany_ [spell1,spell2]
+      insertMany_ [spelling1,spelling2,spelling3,spelling4,spelling5,spelling6]
+      insertMany_ [phrase1, phrase2, phrase3, phrase4, phrase5, phrase6]
+      insertMany_ [spell1,spell2,spell3]
 

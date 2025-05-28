@@ -15,13 +15,20 @@ import Database.Queries.MigrateTable (isMigrateTable)
 import Database.Verb (runDataBaseWithOutLog)
 import Database.Persist.Sql (SqlPersistT, PersistentSqlException)
 
+import Control.Monad.IO.Class (MonadIO)
+import Database.Persist.Postgresql (ConnectionString, Entity (..), rawExecute, toSqlKey, withPostgresqlConn)
+
 type Version = Int
 
 migrationEngine :: ConnectionString -> IO ()
 migrationEngine pginfo = do
+  --todo remove at last
+  putStrLn "Drop All tables"
+  runDataBaseWithOutLog pginfo dropAll
+
   lastMigration <- isMigrateTable pginfo
-  print lastMigration
   let migrationPlan' = mapMaybe (predicate lastMigration) migrationPlan
+
   runDataBaseWithOutLog pginfo $ do
     mapM_ applyMigrate migrationPlan'
   where
@@ -31,6 +38,10 @@ migrationEngine pginfo = do
       time <- liftIO getCurrentTime
       insert_ (MigrateTable {migrateTableVersion = version, migrateTableDescription = description, migrateTableTime = time})
 
-    -- predicate :: Either PersistentSqlException (Maybe Version) -> MyMigration -> Maybe MyMigration
+    predicate :: Either SomeException (Maybe Version) -> MyMigration -> Maybe MyMigration
     predicate (Right (Just num)) (MkMigration {..}) | num >= version = Nothing
     predicate _ m = Just m
+
+
+dropAll :: (MonadIO m) => SqlPersistT m ()
+dropAll = rawExecute "DROP TABLE IF EXISTS users, phrases, spelling, spells, migrate_table" []

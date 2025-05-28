@@ -1,6 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -56,10 +53,11 @@ PTH.share
   UniquePhraseText text
   deriving Eq Show Generic FromJSON ToJSON
  Spelling sql=spelling
-  errors SpellResult 
+  revisions SpellResult 
   deriving Show Generic FromJSON ToJSON
  Spell sql=spells
   phraseId PhraseId
+  paraphrasesId [PhraseId]
   isApproved Bool
   deriving Eq Show Generic FromJSON ToJSON
 |]
