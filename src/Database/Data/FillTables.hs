@@ -1,9 +1,7 @@
-module Database.Data.FillTables  where
+module Database.Data.FillTables (user1,user2,user3,user4,spelling1,spelling2,spelling3,spelling4,spelling5,spelling6,phrase1,phrase2,phrase3,phrase4,phrase5,phrase6,spell1,spell2,spell3)  where
 
-import qualified Database.Migrations.Migrationv0 as S
 import Database.Persist.Postgresql (toSqlKey)
-import Yandex
--- import qualified Schema as S
+import qualified Schema as S
 
 user1, user2, user3, user4 :: S.User
 user1 = S.User "user1"
@@ -12,13 +10,13 @@ user3 = S.User "user3"
 user4 = S.User "user4"
 
 spelling1, spelling2, spelling3,spelling4,spelling5,spelling6 :: S.Spelling 
--- превет москва москва как твои дила
+-- запрос: превет москва москва как твои дила
 spelling1 = S.Spelling 
-            [MkSpellError 1 0 0 0 6 "Превет" ["Привет", "Превед"] ,
-            MkSpellError 1 21 0 21 3 "каг" ["как", "каг"] ,
-            MkSpellError 1 30 0 30 4 "дила" ["дела", "дила"]]
+            [S.MkSpellRevision 1 0 0 0 6 "Превет" ["Привет", "Превед"] ,
+            S.MkSpellRevision 1 21 0 21 3 "каг" ["как", "каг"] ,
+            S.MkSpellRevision 1 30 0 30 4 "дила" ["дела", "дила"]]
 
-spelling2 = S.Spelling [MkSpellError 1 2 2 2 1 "word" ["word","ward"], MkSpellError 4 3 3 3 3 "vo" ["vi","vy"]]
+spelling2 = S.Spelling [S.MkSpellRevision 1 2 2 2 1 "word" ["word","ward"], S.MkSpellRevision 4 3 3 3 3 "vo" ["vi","vy"]]
 spelling3 = S.Spelling []
 spelling4 = S.Spelling []
 spelling5 = S.Spelling []

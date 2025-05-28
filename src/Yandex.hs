@@ -1,4 +1,4 @@
-module Yandex where
+module Yandex (checkError) where
 
 import Control.Monad
 import Control.Exception
@@ -7,24 +7,9 @@ import Network.HTTP.Simple
 import Data.Text.Encoding (encodeUtf8)
 import Data.Text (Text)
 
-import Data.Aeson (FromJSON, ToJSON, eitherDecode)
-import GHC.Generics (Generic)
-import qualified Data.ByteString.Lazy as L
+import Data.Aeson (eitherDecode)
+import Schema (SpellResult)
 
-
-data SpellError = MkSpellError {
-  code :: Int,
-  pos :: Int,
-  row :: Int,
-  col :: Int,
-  len :: Int,
-  word :: Text,
-  s :: [Text]
-                               }
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-type SpellResult = [SpellError]
 
   -- startApp
 checkError :: IO ()
@@ -41,11 +26,11 @@ checkError = do
       when (404 == status || status == 301) (putStrLn "Error! Bot Server 404 or 301")
       let body = eitherDecode @SpellResult $ getResponseBody response
       case body of
-        Right b -> print body  --L.writeFile "cfg/data.cfg" (getResponseBody response)
-        Left _ -> print "error"
+        Right _ -> putStrLn $ show body  --L.writeFile "cfg/data.cfg" (getResponseBody response)
+        Left _ -> putStrLn $ "error"
       -- let b' = eitherDecode body :: Either String [SpellResult]
       print body
-  print "Hello bro"
+  putStrLn "Hello bro"
 
   -- run 8081 $ spellServer
 
@@ -69,7 +54,7 @@ checkError = do
 
 txt1 :: Text
 txt1 = "синхрафазатрон в дубне дубне"
-txt2 = "Some people, when confronted with a problem, think, \"I know, I'll use threads,\" and then two the hav erpoblesms."
+-- txt2 = "Some people, when confronted with a problem, think, \"I know, I'll use threads,\" and then two the hav erpoblesms."
 
 buildGetRequest :: Text -> Request
 buildGetRequest txt =
@@ -80,37 +65,3 @@ buildGetRequest txt =
           setRequestPath "/services/spellservice.json/checkText" $
             setRequestPort 443
               defaultRequest
---
---
--- [
---    { "code": 1, "pos": 0, "row": 0, "col": 0, "len": 14,
---      "word": "синхрофазатрон",
---      "s": [ "синхрофазотрон" ]
---    },
---    { "code": 3, "pos": 17, "row": 0, "col": 17, "len": 5,
---      "word": "дубне",
---      "s": [ "Дубне" ]
---    }
--- ]
-
--- Элементы XML-схемы ответа:
---
---     SpellResult — корневой элемент;
---     error — информация об ошибке (может быть несколько или могут отсутствовать);
---     word — исходное слово;
---     s — подсказка (может быть несколько или могут отсутствовать).
---
--- Элемент <error> содержит следующие атрибуты:
---
---     code — код ошибки, см. Коды ошибок;
---     pos — позиция слова с ошибкой (отсчет от 0);
---     row — номер строки (отсчет от 0);
---     col — номер столбца (отсчет от 0);
---     len — длина слова с ошибкой.
---
---
--- --    eresponse <- try $ httpLBS "http://does-not-exist"
---
---     case eresponse of
---         Left e -> print (e :: HttpException)
---         Right response -> L8.putStrLn $ getResponseBody response

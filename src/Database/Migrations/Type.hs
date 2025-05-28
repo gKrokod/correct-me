@@ -26,9 +26,9 @@ data MyMigration = MkMigration
 
 instance Show MyMigration where
   show (MkMigration v d _) = show v <> ": " <> unpack d
-
+--for public Schema
 PTH.share
-  [PTH.mkPersist PTH.sqlSettings, PTH.mkEntityDefList "createMigrateTable"]
+  [PTH.mkPersist PTH.sqlSettings , PTH.mkEntityDefList "createMigrateTable"]
   [PTH.persistLowerCase|
  MigrateTable sql=migrate_table
   version Int

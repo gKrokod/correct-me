@@ -36,6 +36,7 @@ library
       Database.Queries.MigrateTable
       Database.Queries.News
       Database.Verb
+      Schema
       Server
       Yandex
   other-modules:

@@ -1,46 +1,11 @@
-{-# LANGUAGE TypeOperators #-}
-module Server where
+module Server () where
 
 import Api
-
+import Database.Data.FillTables  (spell1,spell2,spell3)
 import Servant
 
--- on yandex {}
--- слюжба занятости
--- вада
--- вариант нармы
---[
---   {
---     "code": 1,
---     "pos": 0,
---     "row": 0,
---     "col": 0,
---     "len": 6,
---     "word": "слюжба",
---     "s": [
---       "служба",
---       "службы",
---       "службе",
---       "службу"
---     ]
---   },
---   {
---     "code": 1,
---     "pos": 32,
---     "row": 2,
---     "col": 8,
---     "len": 5,
---     "word": "нармы",
---     "s": [
---       "нормы"
---     ]
---   }
--- ]
-
-
 spells :: [Spell]
-spells = [Spell "one", Spell "two", Spell "three"]
-
+spells = [spell1,spell2,spell3]
 
 --handler сюда прикrутить свой
 -- :: Handler .. -> Server API

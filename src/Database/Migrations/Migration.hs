@@ -13,10 +13,10 @@ import Database.Persist.Postgresql (ConnectionString)
 import Database.Persist.Sql (runMigration)
 import Database.Queries.MigrateTable (isMigrateTable)
 import Database.Verb (runDataBaseWithOutLog)
-import Database.Persist.Sql (SqlPersistT, PersistentSqlException)
+import Database.Persist.Sql (SqlPersistT)
 
 import Control.Monad.IO.Class (MonadIO)
-import Database.Persist.Postgresql (ConnectionString, Entity (..), rawExecute, toSqlKey, withPostgresqlConn)
+import Database.Persist.Postgresql (rawExecute)
 
 type Version = Int
 

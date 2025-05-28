@@ -2,19 +2,15 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 
-module Api where
+module Api (Spell(..), API, FilterBy(..)) where
 
 import Servant
-import Data.Text (Text, toLower)
+import Data.Text (toLower)
 import GHC.Generics (Generic)
 import Data.Aeson (ToJSON, FromJSON)
-
+import Schema (Spell(..))
 
 type API = "spell" :> QueryParam "filterby" FilterBy :> Get '[JSON] [Spell]
-
-data Spell = Spell Text
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
 
 data FilterBy = NotApproved | OwnSpells
   deriving stock (Show, Eq, Generic, Ord)
