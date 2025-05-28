@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Api
+      Config
       Database.Api
       Database.Data.FillTables
       Database.Migrations.Migration
@@ -36,6 +37,8 @@ library
       Database.Queries.MigrateTable
       Database.Queries.News
       Database.Verb
+      Handlers.Logger
+      Logger
       Schema
       Server
       Yandex
