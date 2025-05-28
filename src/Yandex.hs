@@ -17,7 +17,7 @@ checkError = do
   --handler <<- loadConfig, DataBase, Setup another
   response' <- try . httpLBS .  buildGetRequest $ txt1
 -- async можно тут сделать и время задать выполнения. 
-  print response'
+  -- print response'
   case response' of
     Left e -> do
       print (e :: SomeException)
@@ -26,10 +26,10 @@ checkError = do
       when (404 == status || status == 301) (putStrLn "Error! Bot Server 404 or 301")
       let body = eitherDecode @SpellResult $ getResponseBody response
       case body of
-        Right _ -> putStrLn $ show body  --L.writeFile "cfg/data.cfg" (getResponseBody response)
+        Right _ -> pure () -- putStrLn $ show body  --L.writeFile "cfg/data.cfg" (getResponseBody response)
         Left _ -> putStrLn $ "error"
       -- let b' = eitherDecode body :: Either String [SpellResult]
-      print body
+      -- print body
   putStrLn "Hello bro"
 
   -- run 8081 $ spellServer

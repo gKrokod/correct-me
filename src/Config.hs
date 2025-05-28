@@ -1,6 +1,6 @@
 -- {-# LANGUAGE DeriveAnyClass #-}
 -- {-# LANGUAGE DerivingStrategies #-}
-module Config (loadConfig, connectionString) where
+module Config (loadConfig, connectionString, ConfigDataBase(..)) where
 
 -- module Config (ConfigDataBase (..), loadConfig, connectionString, whenFillTestData, ServerSetup, makeSetup) where
 
@@ -84,21 +84,6 @@ createConfigFile = do
   let configToJSON = encode testConfig :: L.ByteString
   L.writeFile "config/db.cfg" configToJSON
 --
---   -- connectionString :: ConnectionString
--- connectionString =
---   encodeUtf8 $
---     mconcat
---       [ "host=",
---         "127.0.0.1",
---         " port=",
---         "5432",
---         " user=",
---         "bob",
---         " dbname=",
---         "bobdb",
---         " password=",
---         "1"
---       ]
 
 -- makeSetup :: ConfigDataBase -> IO (ServerSetup IO)
 -- makeSetup cfg = do

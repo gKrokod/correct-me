@@ -1,22 +1,86 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Database.Queries.News  where
+module Database.Queries.Spell  where
 
 import Control.Exception (SomeException, throw, try)
 import Control.Monad.IO.Class (MonadIO)
--- import qualified Data.Text as T
+import  Data.Text (Text)
 -- import Data.Time (UTCTime (..), addDays)
--- import Database.Esqueleto.Experimental (Key, OrderBy, PersistField (..), SqlExpr, Value (..), asc, count, delete, desc, from, fromSqlKey, getBy, groupBy, innerJoin, insert, insertMany, insertMany_, just, leftJoin, like, limit, offset, on, orderBy, replace, select, table, unionAll_, val, where_, withRecursive, (%), (&&.), (++.), (:&) (..), (<.), (==.), (>=.), (?.), (^.), (||.))
--- import Database.Persist.Postgresql (ConnectionString, Entity (..))
--- import Database.Persist.Sql (SqlPersistT)
--- import Database.Verb (runDataBaseWithOutLog)
+import Database.Esqueleto.Experimental (Key, OrderBy, PersistField (..), SqlExpr, Value (..), asc, count, delete, desc, from, fromSqlKey, getBy, groupBy, innerJoin, insert, insertMany, insertMany_, just, leftJoin, like, limit, offset, on, orderBy, replace, select, table, unionAll_, val, where_, withRecursive, (%), (&&.), (++.), (:&) (..), (<.), (==.), (>=.), (?.), (^.), (||.))
+import Database.Persist.Postgresql (ConnectionString, Entity (..))
+import Database.Persist.Sql (SqlPersistT)
+import Database.Verb (runDataBaseWithOutLog)
 -- import Handlers.Database.Base (Limit (..), Offset (..), Success (..))
 -- import Handlers.Web.Base (NewsEditInternal (..), NewsInternal (..), NewsOut (..))
--- import Schema (Category (..), ColumnType (..), EntityField (..), FilterItem (..), Find (..), Image (..), ImageBank (..), News (..), SortOrder (..), Unique (..), User (..))
+import Schema 
+import DTO
 -- import Types (Content (..), Label (..), Login (..), Name (..), Title (..), URI_Image (..))
 
 type LimitData = Int
+-- data PhraseToWeb = PhraseToWeb
+--   { phrase :: Text,
+--     author :: Text,
+--     revision :: SpellResult
+--   }
+--   deriving stock (Show, Generic)
+--   deriving anyclass (ToJSON)
+--
+-- data SpellToWeb = SpellToWeb
+--   { phrase :: PhraseToWeb,
+--     paraphrases :: [PhraseToWeb],
+--     isApproved :: Bool
+--   }
+--   deriving stock (Show, Generic)
+--   deriving anyclass (ToJSON)
 
+pullSpells :: ConnectionString -> Text -> Maybe FilterBy -> IO (Either SomeException [SpellToWeb])   --user name -> filter ->...
+pullSpells connString author mbFilter = do
+  try @SomeException (runDataBaseWithOutLog connString fetchAction)
+    where
+      fetchAction :: (MonadFail m, MonadIO m) => SqlPersistT m [SpellToWeb]
+      fetchAction = pure []
+--       titles <-
+--         (fmap . fmap)
+--           unValue
+--           ( select $ do
+--               (news :& author :& categoryName :& imageBank) <-
+--                 from $
+--                   table @News
+--                     `innerJoin` table @User
+--                       `on` (\(n :& a) -> n ^. NewsUserId ==. a ^. UserId)
+--                     `innerJoin` table @Category
+--                       `on` (\(n :& _ :& c) -> n ^. NewsCategoryId ==. c ^. CategoryId)
+--                     `leftJoin` table @ImageBank
+--                       `on` (\(n :& _ :& _ :& ib) -> just (n ^. NewsId) ==. ib ?. ImageBankNewsId)
+--               groupBy (news ^. NewsTitle, news ^. NewsCreated, author ^. UserName, categoryName ^. CategoryLabel, imageBank ?. ImageBankNewsId)
+--
+--               maybe
+--                 (where_ (val True))
+--                 ( \(Find text) ->
+--                     let subtext = (%) ++. val text ++. (%)
+--                      in where_
+--                           ( (news ^. NewsContent `like` subtext)
+--                               ||. (author ^. UserName `like` subtext)
+--                               ||. (categoryName ^. CategoryLabel `like` subtext)
+--                           )
+--                 )
+--                 mbFind
+--
+--               mapM_ (filterAction news author categoryName) filters
+--
+--               orderBy $ case columnType of
+--                 DataNews -> [order sortOrder (news ^. NewsCreated)]
+--                 AuthorNews -> [order sortOrder (author ^. UserName)]
+--                 CategoryName -> [order sortOrder (categoryName ^. CategoryLabel)]
+--                 QuantityImages -> [order sortOrder (count (imageBank ?. ImageBankNewsId) :: SqlExpr (Value Int))]
+--
+--               offset (fromIntegral . getOffset $ userOffset)
+--               limit (fromIntegral . min configLimit . getLimit $ userLimit)
+--
+--               pure (news ^. NewsTitle)
+--           )
+--       mapM (fetchFullNews configLimit userLimit . MkTitle) titles
+--
 -- pullAllNews :: ConnectionString -> LimitData -> Offset -> Limit -> ColumnType -> SortOrder -> Maybe Find -> [FilterItem] -> IO (Either SomeException [NewsOut])
 -- pullAllNews connString configLimit userOffset userLimit columnType sortOrder mbFind filters = do
 --   try @SomeException (runDataBaseWithOutLog connString fetchAction)
@@ -88,6 +152,74 @@ type LimitData = Int
 --       Ascending -> asc
 --       Descending -> desc
 --
+
+pullAllUsers :: ConnectionString -> IO (Either SomeException [User])
+pullAllUsers connString = do
+  try @SomeException (runDataBaseWithOutLog connString fetchAction)
+  where
+    fetchAction :: (MonadIO m) => SqlPersistT m [User]
+    fetchAction =
+      (fmap . fmap)
+        entityVal
+        ( select $ do
+            users <- from $ table @User
+            -- offset (fromIntegral . getOffset $ userOffset)
+            -- limit (fromIntegral . min configLimit . getLimit $ userLimit)
+            pure users
+        )
+
+pullAllPh :: ConnectionString -> IO (Either SomeException [Phrase])
+pullAllPh connString = do
+  try @SomeException (runDataBaseWithOutLog connString fetchAction)
+  where
+    fetchAction :: (MonadIO m) => SqlPersistT m [Phrase]
+    fetchAction =
+      (fmap . fmap)
+        entityVal
+        ( select $ do
+            phrases <- from $ table @Phrase
+            -- offset (fromIntegral . getOffset $ userOffset)
+            -- limit (fromIntegral . min configLimit . getLimit $ userLimit)
+            pure phrases
+        )
+
+pullAllSl :: ConnectionString -> IO (Either SomeException [Spelling])
+pullAllSl connString = do
+  try @SomeException (runDataBaseWithOutLog connString fetchAction)
+  where
+    fetchAction :: (MonadIO m) => SqlPersistT m [Spelling]
+    fetchAction =
+      (fmap . fmap)
+        entityVal
+        ( select $ do
+            spellings <- from $ table @Spelling
+            -- offset (fromIntegral . getOffset $ userOffset)
+            -- limit (fromIntegral . min configLimit . getLimit $ userLimit)
+            pure spellings
+        )
+
+pullAllSpells :: ConnectionString -> IO (Either SomeException [Spell])
+pullAllSpells connString = do
+  try @SomeException (runDataBaseWithOutLog connString fetchAction)
+  where
+    fetchAction :: (MonadIO m) => SqlPersistT m [Spell]
+    fetchAction =
+      (fmap . fmap)
+        entityVal
+        ( select $ do
+            spells <- from $ table @Spell
+            -- offset (fromIntegral . getOffset $ userOffset)
+            -- limit (fromIntegral . min configLimit . getLimit $ userLimit)
+            pure spells
+        )
+
+
+-- data PhraseToWeb = PhraseToWeb
+--   { phrase :: Text,
+--     author :: Text,
+--     revision :: SpellResult
+--   }
+-- fetchFullPhrase :: (MonadFail m, MonadIO m) => Int -> SqlPersistT m PhraseToWeb
 -- fetchFullNews :: (MonadFail m, MonadIO m) => LimitData -> Limit -> Title -> SqlPersistT m NewsOut
 -- fetchFullNews configLimit userLimit title = do
 --   (label : _) <- (fmap . fmap) entityVal fetchLabel
