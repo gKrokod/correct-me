@@ -36,6 +36,7 @@ type SpellResult = [SpellRevision]
 
 PTH.derivePersistFieldJSON "SpellResult"
 
+
 PTH.share
   [PTH.mkPersist PTH.sqlSettings, PTH.mkEntityDefList "createTablesForEntity"]
   [PTH.persistLowerCase|
@@ -58,6 +59,7 @@ PTH.share
   isApproved Bool
   deriving Eq Show Generic FromJSON ToJSON
 |]
+
 
 migrateVer0 :: MyMigration
 migrateVer0 = MkMigration {version = 0, description = "create all tables", content = migrateModels (createMigrateTable <> createTablesForEntity)}

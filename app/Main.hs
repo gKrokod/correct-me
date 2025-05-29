@@ -52,7 +52,11 @@ main = do
   mapM_ print ei
   putStrLn "**********fetch*********************"
   ei <- 
-   (runDataBaseWithOutLog pginfo (fetch2))
+   (runDataBaseWithOutLog pginfo (fetchA))
+  print ei
+  putStrLn "**********fetch full phrases on num*********************"
+  ei <- 
+   (runDataBaseWithOutLog pginfo (fetchAB))
   print ei
   checkError
   putStrLn "by"
