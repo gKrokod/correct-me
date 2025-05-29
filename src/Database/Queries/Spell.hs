@@ -162,12 +162,54 @@ fetchB keyP = select $ do
   -- where_ (phrases ^. PhraseId ==. val (toSqlKey keyP))
   pure (phrases ^. PhraseText, users ^. UserName, spelling ^. SpellingRevisions)
 
+fetchww :: (MonadFail m, MonadIO m) => Key Phrase -> SqlPersistT m [PhraseToWeb]
+fetchww keyP = do
+  ((p,u,s) : _) <- select $ do
+    (phrases :& users :& spelling) <- 
+      from $ table @Phrase
+        `innerJoin` table @User 
+          `on` (\(p :& u) -> p ^. PhraseUserId ==. u ^. UserId)
+        `innerJoin` table @Spelling 
+          `on` (\(p :& _ :& sp) -> p ^. PhraseSpellingId ==. sp ^. SpellingId)
+    groupBy (phrases ^. PhraseText, users ^. UserId, spelling ^. SpellingRevisions) 
+    where_ (phrases ^. PhraseId ==. val keyP)
+    pure (phrases ^. PhraseText, users ^. UserName, spelling ^. SpellingRevisions)
+
+  let result =
+        PhraseToWeb {
+          phrase = unValue p,
+          author = unValue u,
+          revision = unValue s
+                    }
+  pure [result]
 
 fetchAB :: (MonadFail m, MonadIO m) => SqlPersistT m [[[(Value Text, Value Text, Value [SpellRevision])]]]
 fetchAB = do
   id <- fetchA
   mapM (mapM fetchB) id 
   
+fetchW :: (MonadFail m, MonadIO m) => SqlPersistT m [[[PhraseToWeb]]]
+fetchW = do
+  id <- fetchA
+  mapM (mapM fetchww) id 
+
+--
+-- data PhraseToWeb = PhraseToWeb
+--   { phrase :: Text,
+--     author :: Text,
+--     revision :: SpellResult
+--   }
+--   deriving stock (Show, Generic)
+--   deriving anyclass (ToJSON)
+--
+-- data SpellToWeb = SpellToWeb
+--   { id :: Int64,
+--     phrase :: PhraseToWeb,
+--     paraphrases :: [PhraseToWeb],
+--     isApproved :: Bool
+--   }
+--   deriving stock (Show, Generic)
+--   deriving anyclass (ToJSON)
 
 fetch5 :: (MonadIO m) => SqlPersistT m [Entity Phrase]
 fetch5 = select $ do

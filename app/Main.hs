@@ -56,8 +56,8 @@ main = do
   print ei
   putStrLn "**********fetch full phrases on num*********************"
   ei <- 
-   (runDataBaseWithOutLog pginfo (fetchAB))
-  print ei
+   (runDataBaseWithOutLog pginfo (fetchW))
+  mapM print ei
   checkError
   putStrLn "by"
 

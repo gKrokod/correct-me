@@ -8,6 +8,7 @@ import qualified Data.ByteString as B
 import  Data.Text (Text)
 import GHC.Generics (Generic)
 import Schema 
+import Data.Int (Int64)
 
 data PhraseToWeb = PhraseToWeb
   { phrase :: Text,
@@ -18,7 +19,8 @@ data PhraseToWeb = PhraseToWeb
   deriving anyclass (ToJSON)
 
 data SpellToWeb = SpellToWeb
-  { phrase :: PhraseToWeb,
+  { id :: Int64,
+    phrase :: PhraseToWeb,
     paraphrases :: [PhraseToWeb],
     isApproved :: Bool
   }
