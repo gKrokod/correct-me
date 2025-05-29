@@ -139,9 +139,9 @@ fetch2 = select $ do
   pure (spells ^. SpellParaphrasesId)
 
 -- fetchA :: (MonadIO m) => SqlPersistT m [Value [Key Phrase]]
-fetchA :: (MonadIO m) => SqlPersistT m [[Key Phrase]]
+fetchKeyPhrase :: (MonadIO m) => SqlPersistT m [[Key Phrase]]
 -- fetchA :: (MonadIO m) => SqlPersistT m [[Int64]]
-fetchA =
+fetchKeyPhrase =
   (fmap . fmap) (unValue) (select $ do
   -- (fmap . fmap) (map fromSqlKey . unValue) (select $ do
         spells <- from $ table @Spell
@@ -162,18 +162,18 @@ fetchB keyP = select $ do
   -- where_ (phrases ^. PhraseId ==. val (toSqlKey keyP))
   pure (phrases ^. PhraseText, users ^. UserName, spelling ^. SpellingRevisions)
 
-fetchww :: (MonadFail m, MonadIO m) => Key Phrase -> SqlPersistT m [PhraseToWeb]
-fetchww keyP = do
+fetchFullPhrase :: (MonadFail m, MonadIO m) => Key Phrase -> SqlPersistT m [PhraseToWeb]
+fetchFullPhrase keyP = do
   ((p,u,s) : _) <- select $ do
-    (phrases :& users :& spelling) <- 
-      from $ table @Phrase
-        `innerJoin` table @User 
-          `on` (\(p :& u) -> p ^. PhraseUserId ==. u ^. UserId)
-        `innerJoin` table @Spelling 
-          `on` (\(p :& _ :& sp) -> p ^. PhraseSpellingId ==. sp ^. SpellingId)
-    groupBy (phrases ^. PhraseText, users ^. UserId, spelling ^. SpellingRevisions) 
-    where_ (phrases ^. PhraseId ==. val keyP)
-    pure (phrases ^. PhraseText, users ^. UserName, spelling ^. SpellingRevisions)
+      (phrases :& users :& spelling) <- 
+        from $ table @Phrase
+          `innerJoin` table @User 
+            `on` (\(p :& u) -> p ^. PhraseUserId ==. u ^. UserId)
+          `innerJoin` table @Spelling 
+            `on` (\(p :& _ :& sp) -> p ^. PhraseSpellingId ==. sp ^. SpellingId)
+      groupBy (phrases ^. PhraseText, users ^. UserId, spelling ^. SpellingRevisions) 
+      where_ (phrases ^. PhraseId ==. val keyP)
+      pure (phrases ^. PhraseText, users ^. UserName, spelling ^. SpellingRevisions)
 
   let result =
         PhraseToWeb {
@@ -183,17 +183,88 @@ fetchww keyP = do
                     }
   pure [result]
 
-fetchAB :: (MonadFail m, MonadIO m) => SqlPersistT m [[[(Value Text, Value Text, Value [SpellRevision])]]]
-fetchAB = do
-  id <- fetchA
-  mapM (mapM fetchB) id 
-  
+-- variantu glance
 fetchW :: (MonadFail m, MonadIO m) => SqlPersistT m [[[PhraseToWeb]]]
 fetchW = do
-  id <- fetchA
-  mapM (mapM fetchww) id 
+  id <- fetchKeyPhrase
+  mapM (mapM fetchFullPhrase) id 
 
+fetchNW :: (MonadFail m, MonadIO m) => Key Spell -> SqlPersistT m [[[PhraseToWeb]]]
+fetchNW key = do
+  id <- fetchKeyPhrase1 key
+  mapM (mapM fetchFullPhrase) id 
+
+fetchAllz :: (MonadFail m, MonadIO m) => SqlPersistT m [SpellToWeb]
+fetchAllz = do
+  s@((id', phraseId, paraphraseId, approve): _) <- select $ do
+      (spells :& phrases :& users :& spelling) <- 
+        from $ table @Spell
+          `innerJoin` table @Phrase 
+            `on` (\(s :& p) -> s ^. SpellPhraseId ==. p ^. PhraseId)
+          `innerJoin` table @User 
+            `on` (\(_ :& p :& u) -> p ^. PhraseUserId ==. u ^. UserId)
+          `innerJoin` table @Spelling 
+            `on` (\(_ :& p :& _ :& sp) -> p ^. PhraseSpellingId ==. sp ^. SpellingId)
+      groupBy (spells ^. SpellId, phrases ^. PhraseText, users ^. UserId, spelling ^. SpellingRevisions) 
+      -- pure (spells ^. SpellId, phrases ^. PhraseText, users ^. UserName, spelling ^. SpellingRevisions)
+      pure (spells, spells ^. SpellPhraseId, spells ^. SpellParaphrasesId, spells ^. SpellIsApproved)
+
+  mapM f s
+    where   
+          f (id', phraseId, paraphraseId, approve) = do
+            (main : _) <- fetchFullPhrase (unValue phraseId)
+            (var : _) <- fetchNW (entityKey id')
+            let result =
+                  SpellToWeb {
+                    id = fromSqlKey $ entityKey id',
+                    phrase = main,
+                    paraphrases = concat var,
+                    isApproved = spellIsApproved $ entityVal id'
+                              }
+            pure result
+            
+
+  -- (main : _) <- fetchFullPhrase (unValue phraseId)
+  -- (var : _) <- fetchNW (entityKey id')
+  -- let kk = fmap unValue paraphraseId
+  -- (var : _) <- mapM (mapM fetchFullPhrase) (fmap unValue paraphraseId)
+  -- --map fromSqlKey . unValue)
+  -- let result =
+  --       SpellToWeb {
+  --         id = fromSqlKey $ entityKey id',
+  --         phrase = main,
+  --         -- paraphrases = concat var,
+  --         isApproved = spellIsApproved $ entityVal id'
+  --                   }
+  -- pure [result]
+  -- ((id,phraseId, paraphraseId, approve) : _ ) <- select $ do
 --
+fetchKeyPhrase1 :: (MonadIO m) => Key Spell -> SqlPersistT m [[Key Phrase]]
+fetchKeyPhrase1 key = do
+  k <- (select $ do
+  -- (fmap . fmap) (map fromSqlKey . unValue) (select $ do
+        spells <- from $ table @Spell
+        where_ (spells ^. SpellId ==. val key)
+        -- where_ (spells ^. SpellId ==. keyval (toSqlKey 2))
+        pure (spells ^. SpellParaphrasesId)
+
+    )
+  pure $ fmap unValue k
+  -- pure k(map fromSqlKey $ unValue k)
+
+  -- (fmap . fmap) (map fromSqlKey . unValue) (select $ do
+fetchW1 :: (MonadFail m, MonadIO m) => SqlPersistT m [[[PhraseToWeb]]]
+fetchW1 = do
+  id <- fetchKeyPhrase
+  mapM (mapM fetchFullPhrase) id 
+-- fetchKeyPhrase :: (MonadIO m) => SqlPersistT m [[Key Phrase]]
+-- -- fetchA :: (MonadIO m) => SqlPersistT m [[Int64]]
+-- fetchKeyPhrase =
+--   (fmap . fmap) (unValue) (select $ do
+--   -- (fmap . fmap) (map fromSqlKey . unValue) (select $ do
+--         spells <- from $ table @Spell
+--         pure (spells ^. SpellParaphrasesId)
+    -- )
 -- data PhraseToWeb = PhraseToWeb
 --   { phrase :: Text,
 --     author :: Text,

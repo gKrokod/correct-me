@@ -50,13 +50,17 @@ main = do
   putStrLn "**********spells*********************"
   ei <- pullAllSpells pginfo
   mapM_ print ei
-  putStrLn "**********fetch*********************"
+  -- putStrLn "**********fetch*********************"
+  -- ei <- 
+  --  (runDataBaseWithOutLog pginfo (fetchKeyPhrase1 undefined))
+  -- print ei
+  -- putStrLn "**********fetch full phrases on num*********************"
+  -- ei <- 
+  --  (runDataBaseWithOutLog pginfo (fetchW))
+  -- mapM print ei
+  putStrLn "**********fetch all*********************"
   ei <- 
-   (runDataBaseWithOutLog pginfo (fetchA))
-  print ei
-  putStrLn "**********fetch full phrases on num*********************"
-  ei <- 
-   (runDataBaseWithOutLog pginfo (fetchW))
+   (runDataBaseWithOutLog pginfo (fetchAllz))
   mapM print ei
   checkError
   putStrLn "by"
