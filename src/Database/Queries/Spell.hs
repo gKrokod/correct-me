@@ -6,13 +6,14 @@ import Control.Exception (SomeException, throw, try)
 import Control.Monad.IO.Class (MonadIO)
 import  Data.Text (Text)
 -- import Data.Time (UTCTime (..), addDays)
-import Database.Esqueleto.Experimental (in_, Key, OrderBy, PersistField (..), SqlExpr, Value (..), asc, count, delete, desc, from, fromSqlKey, getBy, groupBy, innerJoin, insert, insertMany, insertMany_, just, leftJoin, like, limit, offset, on, orderBy, replace, select, table, unionAll_, val, where_, withRecursive, (%), (&&.), (++.), (:&) (..), (<.), (==.), (>=.), (?.), (^.), (||.))
-import Database.Persist.Postgresql (ConnectionString, Entity (..), toSqlKey)
+import Database.Esqueleto.Experimental (keyToValues, get,valList, in_, Key, OrderBy, PersistField (..), SqlExpr, Value (..), asc, count, delete, desc, from, fromSqlKey, getBy, groupBy, innerJoin, insert, insertMany, insertMany_, just, leftJoin, like, limit, offset, on, orderBy, replace, select, table, unionAll_, val, where_, withRecursive, (%), (&&.), (++.), (:&) (..), (<.), (==.), (>=.), (?.), (^.), (||.))
+import Database.Persist.Postgresql (ConnectionString, Entity (..), toSqlKey, fromSqlKey)
 import Database.Persist.Sql (SqlPersistT)
 import Database.Verb (runDataBaseWithOutLog)
 -- import Handlers.Database.Base (Limit (..), Offset (..), Success (..))
 -- import Handlers.Web.Base (NewsEditInternal (..), NewsInternal (..), NewsOut (..))
 import Schema 
+import Data.Int
 import DTO
 -- import Types (Content (..), Label (..), Login (..), Name (..), Title (..), URI_Image (..))
 -- import Database.Migrations.Migrationv0 
@@ -259,14 +260,55 @@ fetchPhrase = select $ do
   users <- from $ table @Phrase
   where_ (users ^. PhraseId ==. val (toSqlKey 1))
   pure users
-  -- ( user :& spelling) <- 
-  --   from $ table @Spell
-  --     `innerJoin` table @Phrase `on` (\(s :& p) -> s ^. SpellPhraseId ==. p ^. PhraseId)
-  --     `innerJoin` table @User `on` (\(_ :& p :& u) -> p ^. PhraseUserId ==. u ^. UserId)
-  --     `innerJoin` table @Spelling `on` (\(_ :& p :& _ :& sp) -> p ^. PhraseSpellingId ==. sp ^. SpellingId)
-  -- -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
-  -- -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
-  -- pure (kuser
+
+
+--vse polya bez paraphraz
+fetch1 :: (MonadIO m) => SqlPersistT m [(Value (Key Spell), Value Text, Value Text, Value [SpellRevision])]
+fetch1 = select $ do
+  (spells :& phrases :& users :& spelling) <- 
+    from $ table @Spell
+      `innerJoin` table @Phrase 
+        -- `on` (\(s :& p) -> p ^. PhraseId `in_` valList (map toSqlKey [6]))
+        `on` (\(s :& p) -> s ^. SpellPhraseId ==. p ^. PhraseId)
+      `innerJoin` table @User 
+        `on` (\(_ :& p :& u) -> p ^. PhraseUserId ==. u ^. UserId)
+      `innerJoin` table @Spelling 
+        `on` (\(_ :& p :& _ :& sp) -> p ^. PhraseSpellingId ==. sp ^. SpellingId)
+  groupBy (spells ^. SpellId, phrases ^. PhraseText, users ^. UserId, spelling ^. SpellingRevisions) 
+  -- where_ (phrases ^. PhraseId `in_` spells ^. SpellParaphrasesId))
+  -- where_ (spells ^. SpellId ==. val (toSqlKey 1))
+  pure (spells ^. SpellId, phrases ^. PhraseText, users ^. UserName, spelling ^. SpellingRevisions)
+
+--key paraprhas
+fetch2 :: (MonadIO m) => SqlPersistT m [Value [Key Phrase]]
+fetch2 = select $ do
+  (spells :& phrases :& users :& spelling) <- 
+    from $ table @Spell
+      `innerJoin` table @Phrase 
+        -- `on` (\(s :& p) -> p ^. PhraseId `in_` valList (map toSqlKey [6]))
+        `on` (\(s :& p) -> s ^. SpellPhraseId ==. p ^. PhraseId)
+      `innerJoin` table @User 
+        `on` (\(_ :& p :& u) -> p ^. PhraseUserId ==. u ^. UserId)
+      `innerJoin` table @Spelling 
+        `on` (\(_ :& p :& _ :& sp) -> p ^. PhraseSpellingId ==. sp ^. SpellingId)
+  groupBy (spells ^. SpellId, phrases ^. PhraseText, users ^. UserId, spelling ^. SpellingRevisions) 
+  pure (spells ^. SpellParaphrasesId)
+
+fetch3 :: (MonadIO m) => Key Phrase -> SqlPersistT m [(Value Text, Value Text, Value [SpellRevision])]
+fetch3 key = do 
+  (user : _)  <- (fmap . fmap) entityVal fetchUser
+  -- (Just partPhrase) <- (fmap . fmap) entityVal (get $ keyToValues key)
+  pure undefined
+  where
+    fetchUser :: (MonadIO m) => SqlPersistT m [Entity User]
+    fetchUser = select $ do
+      (phrase :& user) <-
+        from $
+          table @Phrase
+            `innerJoin` table @User 
+              `on` (\(p :& u) -> p ^. PhraseUserId ==. u ^. UserId)
+      where_ (phrase ^. PhraseId ==. Value key)
+      pure user
 
 
 -- fetchAllSpells :: (MonadIO m) => SqlPersistT m [SpellToWeb]
