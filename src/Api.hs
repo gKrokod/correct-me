@@ -8,7 +8,8 @@ import Servant
 import Data.Text (toLower)
 import GHC.Generics (Generic)
 import Data.Aeson (ToJSON, FromJSON)
-import Schema 
+import DTO 
+import Schema
 
-type API = "spell" :> QueryParam "filterby" FilterBy :> Get '[JSON] [Spell]
+type API = "spell" :> QueryParam "filterby" FilterBy :> Get '[JSON] [SpellToWeb]
 
