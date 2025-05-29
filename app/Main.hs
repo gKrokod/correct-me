@@ -52,7 +52,7 @@ main = do
   mapM_ print ei
   putStrLn "**********fetch*********************"
   ei <- 
-   (runDataBaseWithOutLog pginfo (fetchUser))
+   (runDataBaseWithOutLog pginfo (fetchPhrase))
   print ei
   checkError
   putStrLn "by"

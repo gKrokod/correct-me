@@ -7,7 +7,7 @@ import Control.Monad.IO.Class (MonadIO)
 import  Data.Text (Text)
 -- import Data.Time (UTCTime (..), addDays)
 import Database.Esqueleto.Experimental (in_, Key, OrderBy, PersistField (..), SqlExpr, Value (..), asc, count, delete, desc, from, fromSqlKey, getBy, groupBy, innerJoin, insert, insertMany, insertMany_, just, leftJoin, like, limit, offset, on, orderBy, replace, select, table, unionAll_, val, where_, withRecursive, (%), (&&.), (++.), (:&) (..), (<.), (==.), (>=.), (?.), (^.), (||.))
-import Database.Persist.Postgresql (ConnectionString, Entity (..))
+import Database.Persist.Postgresql (ConnectionString, Entity (..), toSqlKey)
 import Database.Persist.Sql (SqlPersistT)
 import Database.Verb (runDataBaseWithOutLog)
 -- import Handlers.Database.Base (Limit (..), Offset (..), Success (..))
@@ -257,7 +257,7 @@ fetchPhrase :: (MonadIO m) => SqlPersistT m [Entity Phrase]
 fetchPhrase = select $ do
   -- Основной JOIN для Spell и связанных сущностей
   users <- from $ table @Phrase
-  where_ (users ^. PhraseId ==. val 1)
+  where_ (users ^. PhraseId ==. val (toSqlKey 1))
   pure users
   -- ( user :& spelling) <- 
   --   from $ table @Spell
