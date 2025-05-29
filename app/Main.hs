@@ -10,7 +10,7 @@ import Config
 import Database.Verb (runDataBaseWithOutLog)
 
 import Data.Text.Encoding (encodeUtf8)
-
+import Schema
 import Database.Persist.Postgresql (ConnectionString)
 import qualified Database.Api as DA
 import qualified Handlers.Base
@@ -47,24 +47,26 @@ main = do
   putStrLn "**********spelling*********************"
   ei <- pullAllSl pginfo
   mapM_ print ei
-  putStrLn "**********spells*********************"
-  ei <- pullSpells pginfo "" Nothing 
-  case ei of
-    Left _ -> print "left"
-    Right x -> mapM_ (\x -> print "" >> print x) x
-  -- putStrLn "**********fetch*********************"
-  -- ei <- 
-  --  (runDataBaseWithOutLog pginfo (fetchKeyPhrase1 undefined))
-  -- print ei
-  -- putStrLn "**********fetch full phrases on num*********************"
-  -- ei <- 
-  --  (runDataBaseWithOutLog pginfo (fetchW))
-  -- mapM print ei
   putStrLn "**********fetch all*********************"
   ei <- 
    (runDataBaseWithOutLog pginfo (fetchAllz))
   mapM print ei
   checkError
+  putStrLn "**********spells*********************"
+  ei <- DA.pullSpells pginfo "" Nothing 
+  case ei of
+    Left _ -> print "left"
+    Right x -> mapM_ (\x -> print "" >> print x) x
+  putStrLn "**********spells Own user1*********************"
+  ei <- DA.pullSpells pginfo "user4" (Just OwnSpells)
+  case ei of
+    Left _ -> print "left"
+    Right x -> mapM_ (\x -> print "" >> print x) x
+  putStrLn "**********spells NotApproved*********************"
+  ei <- DA.pullSpells pginfo "user3" (Just NotApproved)
+  case ei of
+    Left _ -> print "left"
+    Right x -> mapM_ (\x -> print "" >> print x) x
   putStrLn "by"
 
 -- data Handle m = Handle

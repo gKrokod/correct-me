@@ -6,7 +6,7 @@ import Data.Aeson (ToJSON, FromJSON)
 import Servant
 import Data.Text (toLower)
 
-data FilterBy = NotApproved | OwnSpells
+data FilterBy = NotApproved | OwnSpells -- OwnSpells and NotApproved?
   deriving stock (Show, Eq, Generic, Ord)
   deriving anyclass (ToJSON, FromJSON)
 
