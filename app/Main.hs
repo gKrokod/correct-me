@@ -48,8 +48,10 @@ main = do
   ei <- pullAllSl pginfo
   mapM_ print ei
   putStrLn "**********spells*********************"
-  ei <- pullAllSpells pginfo
-  mapM_ print ei
+  ei <- pullSpells pginfo "" Nothing 
+  case ei of
+    Left _ -> print "left"
+    Right x -> mapM_ (\x -> print "" >> print x) x
   -- putStrLn "**********fetch*********************"
   -- ei <- 
   --  (runDataBaseWithOutLog pginfo (fetchKeyPhrase1 undefined))
