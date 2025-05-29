@@ -1,4 +1,6 @@
-module Database.Api (migrationEngine)  where
+module Database.Api (migrationEngine, pullSpells)  where
 
 import Database.Migrations.Migration (migrationEngine)
--- import Database.Queries.News (editNews, findNewsByTitle, pullAllNews, putNews)
+-- import Database.Queries.Spell 
+import Database.Queries.Get (pullSpells)
+--
