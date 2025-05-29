@@ -6,7 +6,7 @@ import Control.Exception (SomeException, throw, try)
 import Control.Monad.IO.Class (MonadIO)
 import  Data.Text (Text)
 -- import Data.Time (UTCTime (..), addDays)
-import Database.Esqueleto.Experimental (Key, OrderBy, PersistField (..), SqlExpr, Value (..), asc, count, delete, desc, from, fromSqlKey, getBy, groupBy, innerJoin, insert, insertMany, insertMany_, just, leftJoin, like, limit, offset, on, orderBy, replace, select, table, unionAll_, val, where_, withRecursive, (%), (&&.), (++.), (:&) (..), (<.), (==.), (>=.), (?.), (^.), (||.))
+import Database.Esqueleto.Experimental (in_, Key, OrderBy, PersistField (..), SqlExpr, Value (..), asc, count, delete, desc, from, fromSqlKey, getBy, groupBy, innerJoin, insert, insertMany, insertMany_, just, leftJoin, like, limit, offset, on, orderBy, replace, select, table, unionAll_, val, where_, withRecursive, (%), (&&.), (++.), (:&) (..), (<.), (==.), (>=.), (?.), (^.), (||.))
 import Database.Persist.Postgresql (ConnectionString, Entity (..))
 import Database.Persist.Sql (SqlPersistT)
 import Database.Verb (runDataBaseWithOutLog)
@@ -219,43 +219,88 @@ pullAllSpells connString = do
 --   { phrase :: Text,
 --     author :: Text,
 --     revision :: SpellResult
---   }
-fetchFullPhrase :: (MonadFail m, MonadIO m) => Int -> SqlPersistT m PhraseToWeb
-fetchFullPhrase uid = do
-  -- (user : _) <- (fmap . fmap) entityVal fetchUser
-  -- (spelling : _) <- (fmap . fmap) entityVal fetchSpelling
-  -- (partPhrase : _) <- (fmap . fmap) entityVal (get (toSqlKey uid))
-  let fullPhrase =
-        PhraseToWeb undefined undefined undefined
-          -- { undefined 
-            -- author = userName user
-            -- revision = MkName $ spellingRevisions spelling,
-            -- phrase = phrasesText partPhrase
-          -- }
-  pure fullPhrase
-  where
-    -- fetchUser :: (MonadIO m) => SqlPersistT m [Entity User]
-    -- fetchUser = select $ do
-    --   (phrase :& user) <-
-    --     from $
-    --       table @Phrase
-    --         `innerJoin` table @User
-    --           `on` (\(p :& u) -> p ^. UserId ==. (u ^. PhraseUserId))
-    --           -- `on` (\(p :& u) -> p ^. phraseUserId ==. (u ^. UserId))
-    --   -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
-    --   -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
-    --   pure user
+-- --   }
+-- fetchFullPhrase :: (MonadFail m, MonadIO m) => Int -> SqlPersistT m PhraseToWeb
+-- fetchFullPhrase uid = do
+--   -- (user : _) <- (fmap . fmap) entityVal fetchUser
+--   -- (spelling : _) <- (fmap . fmap) entityVal fetchSpelling
+--   -- (partPhrase : _) <- (fmap . fmap) entityVal (get (toSqlKey uid))
+--   let fullPhrase =
+--         PhraseToWeb undefined undefined undefined
+--           -- { undefined 
+--             -- author = userName user
+--             -- revision = MkName $ spellingRevisions spelling,
+--             -- phrase = phrasesText partPhrase
+--           -- }
+--   pure fullPhrase
+--   where
+--     fetchUser :: (MonadIO m) => SqlPersistT m [Entity User]
+--     fetchUser = select $ do
+--       (phrase :& user) <-
+--         from $
+--           table @Phrase
+--             `innerJoin` table @User
+--               -- `on` (\(p :& u) -> p ^. UserId ==. (u ^. PhraseUserId))
+--               `on` (\(p :& u) -> p ^. PhraseUserId ==. (u ^. UserId))
+--       -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
+--       -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
+--       pure user
     --
 fetchUser :: (MonadIO m) => SqlPersistT m [Entity User]
 fetchUser = select $ do
-  (phrase :& user) <-
-    from $
-      table @Phrase
-        `innerJoin` table @User
-          `on` (\(p :& u) -> p ^. PhraseUserId ==. (u ^. UserId))
-  -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
-  -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
-  pure user
+  -- Основной JOIN для Spell и связанных сущностей
+  users <- from $ table @User
+  where_ (users ^. UserName ==. val "user1")
+  pure users
+
+fetchPhrase :: (MonadIO m) => SqlPersistT m [Entity Phrase]
+fetchPhrase = select $ do
+  -- Основной JOIN для Spell и связанных сущностей
+  users <- from $ table @Phrase
+  where_ (users ^. PhraseId ==. val 1)
+  pure users
+  -- ( user :& spelling) <- 
+  --   from $ table @Spell
+  --     `innerJoin` table @Phrase `on` (\(s :& p) -> s ^. SpellPhraseId ==. p ^. PhraseId)
+  --     `innerJoin` table @User `on` (\(_ :& p :& u) -> p ^. PhraseUserId ==. u ^. UserId)
+  --     `innerJoin` table @Spelling `on` (\(_ :& p :& _ :& sp) -> p ^. PhraseSpellingId ==. sp ^. SpellingId)
+  -- -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
+  -- -- where_ (news ^. NewsTitle ==. (val . getTitle) title)
+  -- pure (kuser
+
+
+-- fetchAllSpells :: (MonadIO m) => SqlPersistT m [SpellToWeb]
+-- fetchAllSpells = select $ do
+--   -- Основной JOIN для Spell и связанных сущностей
+--   (spell :& mainPhrase :& user :& spelling) <- 
+--     from $ table @Spell
+--       `innerJoin` table @Phrase `on` (\(s :& p) -> s ^. SpellPhraseId ==. p ^. PhraseId)
+--       `innerJoin` table @User `on` (\(_ :& p :& u) -> p ^. PhraseUserId ==. u ^. UserId)
+--       `innerJoin` table @Spelling `on` (\(_ :& p :& _ :& sp) -> p ^. PhraseSpellingId ==. sp ^. SpellingId)
+--
+--   -- Получение парафраз через подзапрос
+--   paraphrases <- select $ do
+--     (paraphrase :& parUser :& parSpelling) <- 
+--       from $ table @Phrase
+--         `innerJoin` table @User `on` (\(p :& u) -> p ^. PhraseUserId ==. u ^. UserId)
+--         `innerJoin` table @Spelling `on` (\(p :& _ :& sp) -> p ^. PhraseSpellingId ==. sp ^. SpellingId)
+--     where_ $ paraphrase ^. PhraseId `in_` spell ^. SpellParaphrasesId
+--     return (paraphrase, parUser, parSpelling)
+--
+--   -- Сборка результатов
+--   return $ SpellToWeb
+--     { phrase = toPhraseToWeb (mainPhrase, user, spelling)
+--     , paraphrases = map toPhraseToWeb paraphrases
+--     , isApproved = spell ^. SpellIsApproved
+--     }
+--
+--
+-- toPhraseToWeb :: (Entity Phrase, Entity User, Entity Spelling) -> PhraseToWeb
+-- toPhraseToWeb (Entity _ p, Entity _ u, Entity _ s) = PhraseToWeb
+--   { phrase = p ^. PhraseText
+--   , author = u ^. UserName
+--   , revision = s ^. SpellingRevisions
+--   }
 
 -- fetchFullNews :: (MonadFail m, MonadIO m) => LimitData -> Limit -> Title -> SqlPersistT m NewsOut
 -- fetchFullNews configLimit userLimit title = do

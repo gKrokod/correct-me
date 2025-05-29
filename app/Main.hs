@@ -7,6 +7,7 @@ import Yandex (checkError)
 import Database.Migrations.Migration (migrationEngine) 
 import Database.Queries.Spell
 import Config
+import Database.Verb (runDataBaseWithOutLog)
 
 import Data.Text.Encoding (encodeUtf8)
 
@@ -49,6 +50,10 @@ main = do
   putStrLn "**********spells*********************"
   ei <- pullAllSpells pginfo
   mapM_ print ei
+  putStrLn "**********fetch*********************"
+  ei <- 
+   (runDataBaseWithOutLog pginfo (fetchUser))
+  print ei
   checkError
   putStrLn "by"
 

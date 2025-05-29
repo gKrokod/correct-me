@@ -11,11 +11,11 @@
 {-# OPTIONS_GHC -ddump-splices #-}
 {-# OPTIONS_GHC -ddump-to-file #-}
 
-module Database.Migrations.Migrationv0 (SpellRevision(..), User(..),Phrase(..),Spelling(..), Spell(..), migrateVer0, SpellResult)  where
+module Database.Migrations.Migrationv0 (EntityField(..), SpellRevision(..), User(..),Phrase(..),Spelling(..), Spell(..), migrateVer0, SpellResult)  where
 
 import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
-import Database.Migrations.Type (MyMigration (..), createMigrateTable)
+import Database.Migrations.Type (MyMigration (..), createMigrateTable, EntityField(..))
 import Database.Persist.TH (migrateModels)
 import qualified Database.Persist.TH as PTH
 import GHC.Generics (Generic)
