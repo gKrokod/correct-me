@@ -1,38 +1,29 @@
-module Yandex (checkError) where
+module Web.Yandex (revisionSpell) where
 
 import Control.Monad
 import Control.Exception
 import Network.HTTP.Simple
-
 import Data.Text.Encoding (encodeUtf8)
-import Data.Text (Text)
-
+import Data.Text as T (Text, pack)
 import Data.Aeson (eitherDecode)
-import Schema (SpellResult)
+import Web.Types (SpellResult)
 
-
-  -- startApp
-checkError :: IO ()
-checkError = do
-  --handler <<- loadConfig, DataBase, Setup another
-  response' <- try . httpLBS .  buildGetRequest $ txt1
--- async можно тут сделать и время задать выполнения. 
-  -- print response'
+-- config тут еще надо
+revisionSpell :: Text -> IO (Either Text SpellResult)
+revisionSpell txt = do
+  response' <- try @SomeException . httpLBS . buildGetRequest $ txt
   case response' of
     Left e -> do
-      print (e :: SomeException)
+      pure $ Left "Can't connect to spellservice"
     Right response -> do
       let status = getResponseStatusCode response
-      when (404 == status || status == 301) (putStrLn "Error! Bot Server 404 or 301")
       let body = eitherDecode @SpellResult $ getResponseBody response
-      case body of
-        Right _ -> pure () -- putStrLn $ show body  --L.writeFile "cfg/data.cfg" (getResponseBody response)
-        Left _ -> putStrLn $ "error"
-      -- let b' = eitherDecode body :: Either String [SpellResult]
-      -- print body
-  putStrLn "Hello bro"
-
-  -- run 8081 $ spellServer
+      case (status , body) of
+        (404, _) -> pure $ Left "spellservice 404"
+        (301, _) -> pure $ Left "spellservice 301"
+        (_, Right spellresult) -> pure $ Right spellresult
+        _ -> pure $ Left $ "error:" <> T.pack (show status) <> T.pack (show body)
+          
 
 -- JSON-интерфейс:
 -- https://speller.yandex.net/services/spellservice.json/checkText?text=синхрафазатрон+в+дубне
@@ -51,10 +42,6 @@ checkError = do
 --       let msg = eitherDecode $ getResponseBody response -- messages : text, gif
 --
 --
-
-txt1 :: Text
-txt1 = "синхрафазатрон в дубне дубне"
--- txt2 = "Some people, when confronted with a problem, think, \"I know, I'll use threads,\" and then two the hav erpoblesms."
 
 buildGetRequest :: Text -> Request
 buildGetRequest txt =

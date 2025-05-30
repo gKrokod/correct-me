@@ -2,7 +2,7 @@
 
 module Main (main) where
 
-import Yandex (checkError)
+import qualified Web.Yandex as WA
 import Database.Migrations.Migration (migrationEngine) 
 import Config
 import Database.Verb (runDataBaseWithOutLog)
@@ -51,12 +51,17 @@ main = do
          Handlers.Database.Spell.Handle
            { 
              Handlers.Database.Spell.logger = logHandle,
-             Handlers.Database.Spell.pullSpells = DA.pullSpells pginfo
+             Handlers.Database.Spell.pullSpells = DA.pullSpells pginfo,
+             Handlers.Database.Spell.putSpell = DA.putSpell pginfo, 
+             Handlers.Database.Spell.findUserByName = DA.findUserByName pginfo,
+             Handlers.Database.Spell.findPhrase = DA.findPhrase pginfo,
+             Handlers.Database.Spell.createUser = DA.createUser pginfo
           }
       spellHandle =
         Handlers.Web.Spell.Handle
           { Handlers.Web.Spell.logger = logHandle,
             Handlers.Web.Spell.base = baseSpellHandle,
+            Handlers.Web.Spell.revisionSpell = WA.revisionSpell,
             Handlers.Web.Spell.getBody = WU.getBody
           }      
       handle =
@@ -64,8 +69,8 @@ main = do
           { Handlers.Web.Base.connectionString = pginfo,
             Handlers.Web.Base.logger = logHandle,
             Handlers.Web.Base.spell = spellHandle,
-            Handlers.Web.Base.client = Nothing,
-            Handlers.Web.Base.revisionSpell = \_ -> pure True
+            Handlers.Web.Base.client = Nothing
+            
           }        
 
   run (cPortServer config) $ authorization handle app

@@ -1,46 +1,43 @@
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Handlers.Web.Spell.Create (createSpell) where
 
-import Data.Proxy (Proxy (..))
 import qualified Data.Text as T
 import Handlers.Database.Api (createSpellBase)
--- import Handlers.Database.Auth (ClientRole (..))
-import qualified Handlers.Logger
+import Handlers.Logger (Log (..), logMessage)
 import Handlers.Web.Spell (Handle (..))
--- import Handlers.Web.News.Types (NewsInternal (..))
+import Handlers.Web.Spell.Types (SpellInternal (..))
 import Network.Wai (Request, Response)
--- import Types (Content (..), Label (..), Login (..), Title (..))
--- import Web.DTO.News (NewsFromWeb (..), webToNews)
+import Web.DTO.Spell  (PhraseFromWeb(..), webToPhrase)
 import qualified Web.Utils as WU
+import Web.Types(Client)
+import Data.Either
+import Control.Monad
 
--- creatSpell :: (Monad m) => Proxy 'PublisherRole -> Handle m -> Request -> m Response
-createSpell _ h req = do
-  undefined
-  -- let logHandle = logger h
-  --     baseHandle = base h
-  -- body <- webToNews <$> getBody h req
-  -- case body of
-  --   Left e -> do
-  --     Handlers.Logger.logMessage logHandle Handlers.Logger.Error (T.pack e)
-  --     pure (WU.response400 . T.pack $ e)
-  --   Right (NewsFromWeb {..}) -> do
-  --     tryCreateNews <-
-  --       createNewsBase
-  --         baseHandle
-  --         ( NewsInternal
-  --             { titleNews = MkTitle title,
-  --               authorNews = MkLogin login,
-  --               labelNews = MkLabel label,
-  --               contentNews = MkContent content,
-  --               imagesNews = images,
-  --               isPublishNews = isPublish
-  --             }
-  --         )
-  --     case tryCreateNews of
-  --       Right _ ->
-  --         pure WU.response200
-  --       Left e -> do
-  --         Handlers.Logger.logMessage (logger h) Handlers.Logger.Error e
-  --         pure WU.response500
+createSpell :: (Monad m) => Client -> Handle m -> Request -> m Response
+createSpell author h req = do
+  let logHandle = logger h
+      baseHandle = base h
+  body <- webToPhrase <$> getBody h req
+  case body of
+    Left e -> do
+      logMessage logHandle Error (T.pack e)
+      pure (WU.response400 . T.pack $ e)
+    Right (PhraseFromWeb phrase) -> do
+      revi <- revisionSpell h phrase 
+      when (isLeft revi) (logMessage logHandle Warning (fromLeft "function revisionSpell fail" revi))
+      tryCreateSpell <-
+        createSpellBase
+          baseHandle
+          ( SpellInternal
+              { phrase = phrase,
+                author = author,
+                revision = fromRight [] revi
+              }
+          )
+      case tryCreateSpell of
+        Right _ ->
+          pure WU.response200
+        Left e -> do
+          Handlers.Logger.logMessage (logger h) Handlers.Logger.Error e
+          pure WU.response500

@@ -1,14 +1,17 @@
 module Handlers.Web.Spell.Types  where
-
+import Data.Text (Text)
 import Schema 
+import Web.Types(Client, SpellResult)
 
--- data NewsInternal = NewsInternal
---   { titleNews :: Title,
---     authorNews :: Login,
---     labelNews :: Label,
---     contentNews :: Content,
---     imagesNews :: [Image],
---     isPublishNews :: Bool
+data SpellInternal = SpellInternal
+  { phrase :: Text,
+    author :: Client,
+    revision :: SpellResult
+  }
+-- data PhraseToWeb = PhraseToWeb
+--   { phrase :: Text,
+--     author :: Text,
+--     revision :: SpellResult
 --   }
 --
 -- data NewsEditInternal = NewsEditInternal

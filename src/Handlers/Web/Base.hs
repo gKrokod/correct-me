@@ -13,7 +13,6 @@ data Handle m = Handle
   { connectionString :: ConnectionString,
     logger :: Handlers.Logger.Handle m,
     spell :: Handlers.Web.Spell.Handle m, -- base this,
-    client :: Maybe Client,
-    revisionSpell :: Text -> m Bool
+    client :: Maybe Client
     -- client :: Handlers.Service.Yandex.Client m -- tyt clienta potom
   }
