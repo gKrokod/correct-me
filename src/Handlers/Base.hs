@@ -5,6 +5,7 @@ import Data.Text (Text)
 import qualified Handlers.Logger
 import Schema
 import Web.DTO.Spell
+import Web.Query (FilterBy(..))
 
 
 data Handle m = Handle

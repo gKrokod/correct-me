@@ -1,0 +1,4 @@
+#!/bin/bash
+#
+curl -v 'login1:qpass1@127.0.0.1:4221/spell/get?filter=%7B"NotApproved"%7D'
+

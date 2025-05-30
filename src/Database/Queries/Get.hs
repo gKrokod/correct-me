@@ -13,6 +13,7 @@ import Database.Verb (runDataBaseWithOutLog)
 import Schema 
 import Data.Int
 import Web.DTO.Spell
+import Web.Query (FilterBy(..))
 
 
 pullSpells :: ConnectionString -> Text -> Maybe FilterBy -> IO (Either SomeException [SpellToWeb])   --user name -> filter ->...

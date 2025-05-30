@@ -6,23 +6,21 @@ import qualified Handlers.Logger
 import Handlers.Web.Spell (Handle (..))
 import Network.Wai (Request, Response, queryString)
 import Schema 
-import Data.Text (Text)
+import Data.Text as T (Text,pack)
 import Web.DTO.Spell (spellsToWeb)
 -- import Web.Query (queryToFilters, queryToFind, queryToPaginate, queryToSort)
 import qualified Web.Utils as WU
+import Web.Query
 
-type FilterItem = Text
 
-existingSpells :: (Monad m) => Text -> FilterItem -> Handle m -> Request -> m Response
-existingSpells author filterBy h req = do
+existingSpells :: (Monad m) => Text -> Handle m -> Request -> m Response
+existingSpells author h req = do
   let logHandle = logger h
       baseHandle = base h
+      query = queryString req
+      filterBy = queryToFilter query
   Handlers.Logger.logMessage logHandle Handlers.Logger.Debug "existingSPells - here where are"
-  --     query = queryString req
-  --     (userOffset, userLimit) = queryToPaginate query
-  --     (userSortColumn, userSortOrder) = queryToSort query
-  --     findSubString = queryToFind query
-  --     filters = filterAuthor : queryToFilters query
+  Handlers.Logger.logMessage logHandle Handlers.Logger.Debug (T.pack $ show filterBy)
   spells <- getAllSpells baseHandle author filterBy
   -- news <- getAllSpells baseHandle (MkOffset userOffset) (MkLimit userLimit) userSortColumn userSortOrder findSubString filters
   case spells of

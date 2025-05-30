@@ -36,13 +36,11 @@ library
       Database.Migrations.Type
       Database.Queries.Get
       Database.Queries.MigrateTable
-      Database.Queries.Spell
       Database.Verb
       Handlers.Base
       Handlers.Database.Api
       Handlers.Database.Auth
       Handlers.Database.Authorization
-      Handlers.Database.Base
       Handlers.Database.Spell
       Handlers.Database.Spell.Add
       Handlers.Database.Spell.Check

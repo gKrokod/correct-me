@@ -9,11 +9,12 @@ import Handlers.Logger (Log (..), logMessage)
 import Schema
 import Data.Text as T (Text, pack)
 import Web.DTO.Spell (PhraseToWeb(..), SpellToWeb(..))
+import Web.Query
 
-getAllSpells :: (Monad m) => Handle m -> Text -> Text -> m (Either Text [SpellToWeb])
-getAllSpells h a f = do
+getAllSpells :: (Monad m) => Handle m -> Text -> Maybe FilterBy -> m (Either Text [SpellToWeb])
+getAllSpells h a filterBy = do
   let logHandle = logger h
-  spells <- pullSpells h a Nothing
+  spells <- pullSpells h a filterBy
   when (isLeft spells) (logMessage logHandle Handlers.Logger.Error "function pullSpells fail")
   pure $ either (Left . T.pack . displayException) Right spells
   --

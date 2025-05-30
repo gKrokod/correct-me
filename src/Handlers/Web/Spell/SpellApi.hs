@@ -21,7 +21,7 @@ endPointSpell h req = do
       Handlers.Logger.logMessage logHandle Handlers.Logger.Debug "/spell/get tyt mu"
       let author = undefined  --FilterPublishOrAuthor (fmap getLogin . A.author $ userRole)
       let filterBy = undefined  --FilterPublishOrAuthor (fmap getLogin . A.author $ userRole)
-      existingSpells "" "filterBy" spellHandle req
+      existingSpells "" spellHandle req
     "/spell/create" -> do
       undefined
     "/spell/check" -> do

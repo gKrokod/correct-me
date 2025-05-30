@@ -5,7 +5,6 @@ module Main (main) where
 import Yandex (checkError)
 -- import qualified Database.Api as DA
 import Database.Migrations.Migration (migrationEngine) 
-import Database.Queries.Spell
 import Config
 import Database.Verb (runDataBaseWithOutLog)
 
