@@ -13,7 +13,6 @@ import qualified Data.Text.Encoding as E
 import GHC.Generics (Generic)
 import Schema 
 
-
 data FilterBy = NotApproved | OwnSpells -- OwnSpells and NotApproved?
   deriving stock (Show, Eq, Generic, Ord)
   deriving anyclass (ToJSON, FromJSON)
@@ -30,3 +29,18 @@ queryToFilter = convertFromWeb . mapMaybe (\(x, y) -> if x == "filter" then y el
       Right (FilterFromWeb (Just x)) -> Just x
       _ -> Nothing
     convertFromWeb _ = Nothing
+
+headersToLoginAndPassword :: [(CI B.ByteString, B.ByteString)] -> Maybe (T.Text, T.Text)
+headersToLoginAndPassword ((header, loginpass) : xs)
+  | header == "Authorization"
+      && B.take 6 loginpass == "Basic " =
+      Just $ splitLoginPass (B.drop 6 loginpass)
+  | otherwise = headersToLoginAndPassword xs
+  where
+    splitLoginPass :: B.ByteString -> (T.Text, T.Text)
+    splitLoginPass xs' =
+      let colon = fromIntegral $ fromEnum ':'
+       in case map E.decodeUtf8 . B.splitWith (== colon) . B64.decodeBase64Lenient $ xs' of
+            [l, p] -> (l, p)
+            _ -> ("", "")
+headersToLoginAndPassword [] = Nothing

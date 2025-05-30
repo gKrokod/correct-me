@@ -27,7 +27,6 @@ library
   exposed-modules:
       Config
       Database.Api
-      Database.Authorization
       Database.Data.FillTables
       Database.Migrations.Migration
       Database.Migrations.MigrationPlan
@@ -37,10 +36,7 @@ library
       Database.Queries.Get
       Database.Queries.MigrateTable
       Database.Verb
-      Handlers.Base
       Handlers.Database.Api
-      Handlers.Database.Auth
-      Handlers.Database.Authorization
       Handlers.Database.Spell
       Handlers.Database.Spell.Add
       Handlers.Database.Spell.Check
@@ -48,7 +44,6 @@ library
       Handlers.Database.Spell.Get
       Handlers.Logger
       Handlers.Router
-      Handlers.Spell.Get
       Handlers.Web.Api
       Handlers.Web.Base
       Handlers.Web.Spell
@@ -62,6 +57,7 @@ library
       Schema
       Web.DTO.Spell
       Web.Query
+      Web.Types
       Web.Utils
       Yandex
   other-modules:

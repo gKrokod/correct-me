@@ -10,18 +10,21 @@ import Handlers.Web.Spell.Check
 import Network.Wai (Request, Response, rawPathInfo)
 import Schema 
 import qualified Web.Utils as WU
+import Web.Types (Client)
 
 endPointSpell :: (Monad m) => Handle m -> Request -> m Response
 endPointSpell h req = do
   let logHandle = Handlers.Web.Base.logger h
       spellHandle = Handlers.Web.Base.spell h
-  --     userRole = Handlers.Web.Base.client h
+      clientName = Handlers.Web.Base.client h
   case rawPathInfo req of
     "/spell/get" -> do
-      Handlers.Logger.logMessage logHandle Handlers.Logger.Debug "/spell/get tyt mu"
-      let author = undefined  --FilterPublishOrAuthor (fmap getLogin . A.author $ userRole)
-      let filterBy = undefined  --FilterPublishOrAuthor (fmap getLogin . A.author $ userRole)
-      existingSpells "" spellHandle req
+      case clientName of
+        Just name -> existingSpells name spellHandle req
+        _ -> do
+          Handlers.Logger.logMessage logHandle Handlers.Logger.Warning "Access denied"
+          pure WU.response403
+
     "/spell/create" -> do
       undefined
     "/spell/check" -> do
