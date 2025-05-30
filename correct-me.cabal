@@ -25,7 +25,6 @@ source-repository head
 
 library
   exposed-modules:
-      Api
       Config
       Database.Api
       Database.Data.FillTables
@@ -36,15 +35,30 @@ library
       Database.Migrations.Type
       Database.Queries.Get
       Database.Queries.MigrateTable
-      Database.Queries.Spell
       Database.Verb
-      DTO
-      Handlers.Base
+      Handlers.Database.Api
+      Handlers.Database.Spell
+      Handlers.Database.Spell.Add
+      Handlers.Database.Spell.Check
+      Handlers.Database.Spell.Create
+      Handlers.Database.Spell.Get
       Handlers.Logger
-      Handlers.Spell.Get
+      Handlers.Router
+      Handlers.Web.Api
+      Handlers.Web.Base
+      Handlers.Web.Spell
+      Handlers.Web.Spell.Add
+      Handlers.Web.Spell.Check
+      Handlers.Web.Spell.Create
+      Handlers.Web.Spell.Get
+      Handlers.Web.Spell.SpellApi
+      Handlers.Web.Spell.Types
       Logger
       Schema
-      Server
+      Web.DTO.Spell
+      Web.Query
+      Web.Types
+      Web.Utils
       Yandex
   other-modules:
       Paths_correct_me
@@ -65,7 +79,10 @@ library
   build-depends:
       aeson
     , base >=4.7
+    , base64
+    , binary
     , bytestring
+    , case-insensitive
     , esqueleto
     , http-conduit
     , http-types
@@ -77,6 +94,7 @@ library
     , template-haskell
     , text
     , time
+    , transformers
     , wai
     , warp
   default-language: Haskell2010

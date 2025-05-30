@@ -12,11 +12,12 @@ import Database.Persist.Sql (SqlPersistT)
 import Database.Verb (runDataBaseWithOutLog)
 import Schema 
 import Data.Int
-import DTO
+import Web.DTO.Spell
+import Web.Query (FilterBy(..))
+import Web.Types(Client(..))
 
-
-pullSpells :: ConnectionString -> Text -> Maybe FilterBy -> IO (Either SomeException [SpellToWeb])   --user name -> filter ->...
-pullSpells connString author mbFilter = do
+pullSpells :: ConnectionString -> Client -> Maybe FilterBy -> IO (Either SomeException [SpellToWeb])   --user name -> filter ->...
+pullSpells connString (Client author) mbFilter = do
   try @SomeException (runDataBaseWithOutLog connString fetchAction)
     where
       fetchAction :: (MonadFail m, MonadIO m) => SqlPersistT m [SpellToWeb]
