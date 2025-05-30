@@ -12,7 +12,7 @@ import Database.Persist.Sql (SqlPersistT)
 import Database.Verb (runDataBaseWithOutLog)
 import Schema 
 import Data.Int
-import DTO
+import Web.DTO.Spell
 
 
 pullSpells :: ConnectionString -> Text -> Maybe FilterBy -> IO (Either SomeException [SpellToWeb])   --user name -> filter ->...

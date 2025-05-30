@@ -4,7 +4,7 @@ import Control.Exception (SomeException)
 import Data.Text (Text)
 import qualified Handlers.Logger
 import Schema
-import DTO
+import Web.DTO.Spell
 
 
 data Handle m = Handle

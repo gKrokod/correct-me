@@ -54,6 +54,11 @@ library:
     - monad-logger
     - http-conduit
     - transformers
+    - case-insensitive
+    - http-types
+    - base64
+    - binary
+    - binary
 
 executables:
   correct-me-exe:

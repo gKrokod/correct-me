@@ -18,7 +18,7 @@ import Database.Verb (runDataBaseWithOutLog)
 -- import Handlers.Web.Base (NewsEditInternal (..), NewsInternal (..), NewsOut (..))
 import Schema 
 import Data.Int
-import DTO
+import Web.DTO.Spell
 -- import Types (Content (..), Label (..), Login (..), Name (..), Title (..), URI_Image (..))
 -- import Database.Migrations.Migrationv0 
 

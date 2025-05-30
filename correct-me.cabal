@@ -25,9 +25,9 @@ source-repository head
 
 library
   exposed-modules:
-      Api
       Config
       Database.Api
+      Database.Authorization
       Database.Data.FillTables
       Database.Migrations.Migration
       Database.Migrations.MigrationPlan
@@ -38,13 +38,33 @@ library
       Database.Queries.MigrateTable
       Database.Queries.Spell
       Database.Verb
-      DTO
       Handlers.Base
+      Handlers.Database.Api
+      Handlers.Database.Auth
+      Handlers.Database.Authorization
+      Handlers.Database.Base
+      Handlers.Database.Spell
+      Handlers.Database.Spell.Add
+      Handlers.Database.Spell.Check
+      Handlers.Database.Spell.Create
+      Handlers.Database.Spell.Get
       Handlers.Logger
+      Handlers.Router
       Handlers.Spell.Get
+      Handlers.Web.Api
+      Handlers.Web.Base
+      Handlers.Web.Spell
+      Handlers.Web.Spell.Add
+      Handlers.Web.Spell.Check
+      Handlers.Web.Spell.Create
+      Handlers.Web.Spell.Get
+      Handlers.Web.Spell.SpellApi
+      Handlers.Web.Spell.Types
       Logger
       Schema
-      Server
+      Web.DTO.Spell
+      Web.Query
+      Web.Utils
       Yandex
   other-modules:
       Paths_correct_me
@@ -65,7 +85,10 @@ library
   build-depends:
       aeson
     , base >=4.7
+    , base64
+    , binary
     , bytestring
+    , case-insensitive
     , esqueleto
     , http-conduit
     , http-types
