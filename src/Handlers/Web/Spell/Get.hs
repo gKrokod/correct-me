@@ -22,7 +22,6 @@ existingSpells author h req = do
   Handlers.Logger.logMessage logHandle Handlers.Logger.Debug "existingSPells - here where are"
   Handlers.Logger.logMessage logHandle Handlers.Logger.Debug (T.pack $ show filterBy)
   spells <- getAllSpells baseHandle author filterBy
-  -- news <- getAllSpells baseHandle (MkOffset userOffset) (MkLimit userLimit) userSortColumn userSortOrder findSubString filters
   case spells of
     Left e -> do
       Handlers.Logger.logMessage logHandle Handlers.Logger.Error e
