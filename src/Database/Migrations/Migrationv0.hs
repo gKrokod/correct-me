@@ -11,31 +11,18 @@
 {-# OPTIONS_GHC -ddump-splices #-}
 {-# OPTIONS_GHC -ddump-to-file #-}
 
-module Database.Migrations.Migrationv0 (EntityField(..), SpellRevision(..), User(..),Phrase(..),Spelling(..), Spell(..), migrateVer0, SpellResult)  where
+module Database.Migrations.Migrationv0 (EntityField(..), User(..),Phrase(..),Spelling(..), Spell(..), migrateVer0, Unique(..), EntityField(..))  where
 
 import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import Database.Migrations.Type (MyMigration (..), createMigrateTable, EntityField(..))
 import Database.Persist.TH (migrateModels)
+import Database.Persist.Class (EntityField (..), Unique (..))
 import qualified Database.Persist.TH as PTH
 import GHC.Generics (Generic)
-
-data SpellRevision = MkSpellRevision {
-  code :: Int,   -- code — код ошибки
-  pos :: Int,    -- pos — позиция слова с ошибкой (отсчет от 0)
-  row :: Int,    -- row — номер строки (отсчет от 0)
-  col :: Int,    -- col — номер столбца (отсчет оn 0)
-  len :: Int,    -- len — длина слова с ошибкой.
-  word :: Text,  -- word — исходное слово
-  s :: [Text]    -- s — подсказка (может быть несколько или могут отсутствовать).
-                               }
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-type SpellResult = [SpellRevision]
+import Web.Types (SpellResult)
 
 PTH.derivePersistFieldJSON "SpellResult"
-
 
 PTH.share
   [PTH.mkPersist PTH.sqlSettings, PTH.mkEntityDefList "createTablesForEntity"]

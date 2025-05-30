@@ -9,7 +9,7 @@ import Schema
 import Data.Text as T (Text, pack)
 import Web.DTO.Spell (SpellToWeb(..))
 import Web.Query
-import Web.Types (Client)
+import Web.Types (Client, FilterBy)
 
 getAllSpells :: (Monad m) => Handle m -> Client -> Maybe FilterBy -> m (Either Text [SpellToWeb])
 getAllSpells h author filterBy = do

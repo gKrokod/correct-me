@@ -1,6 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 
-module Web.DTO.Spell (spellsToWeb, PhraseToWeb(..), SpellToWeb(..))where
+module Web.DTO.Spell (spellsToWeb, PhraseToWeb(..), SpellToWeb(..), webToPhrase, PhraseFromWeb(..)) where
 
 import Data.Aeson (FromJSON, ToJSON, eitherDecodeStrict, encode)
 import Data.Binary.Builder (Builder, fromLazyByteString)
@@ -9,6 +9,7 @@ import  Data.Text (Text)
 import GHC.Generics (Generic)
 import Schema 
 import Data.Int (Int64)
+import Web.Types (SpellResult)
 
 data PhraseToWeb = PhraseToWeb
   { phrase :: Text,
@@ -29,3 +30,12 @@ data SpellToWeb = SpellToWeb
 
 spellsToWeb :: [SpellToWeb] -> Builder
 spellsToWeb = fromLazyByteString . encode @[SpellToWeb] 
+
+newtype PhraseFromWeb = PhraseFromWeb
+  { phrase :: Text}
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON)
+
+
+webToPhrase :: B.ByteString -> Either String PhraseFromWeb
+webToPhrase = eitherDecodeStrict @PhraseFromWeb

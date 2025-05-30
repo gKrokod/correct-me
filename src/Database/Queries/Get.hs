@@ -13,8 +13,7 @@ import Database.Verb (runDataBaseWithOutLog)
 import Schema 
 import Data.Int
 import Web.DTO.Spell
-import Web.Query (FilterBy(..))
-import Web.Types(Client(..))
+import Web.Types(Client(..),FilterBy(..))
 
 pullSpells :: ConnectionString -> Client -> Maybe FilterBy -> IO (Either SomeException [SpellToWeb])   --user name -> filter ->...
 pullSpells connString (Client author) mbFilter = do

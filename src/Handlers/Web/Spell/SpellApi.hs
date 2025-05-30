@@ -3,7 +3,7 @@ module Handlers.Web.Spell.SpellApi (endPointSpell) where
 -- import qualified Handlers.Database.Auth as A (Client (..))
 import qualified Handlers.Logger
 import Handlers.Web.Base (Handle (..))
-import Handlers.Web.Spell.Create
+import Handlers.Web.Spell.Create (createSpell)
 import Handlers.Web.Spell.Get (existingSpells)
 import Handlers.Web.Spell.Add 
 import Handlers.Web.Spell.Check 
@@ -24,9 +24,12 @@ endPointSpell h req = do
         _ -> do
           Handlers.Logger.logMessage logHandle Handlers.Logger.Warning "Access denied"
           pure WU.response403
-
     "/spell/create" -> do
-      undefined
+      case clientName of
+        Just name -> createSpell name spellHandle req
+        _ -> do
+          Handlers.Logger.logMessage logHandle Handlers.Logger.Warning "Access denied"
+          pure WU.response403
     "/spell/check" -> do
       undefined
     "/spell/add" -> do

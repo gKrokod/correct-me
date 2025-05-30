@@ -51,12 +51,17 @@ main = do
          Handlers.Database.Spell.Handle
            { 
              Handlers.Database.Spell.logger = logHandle,
-             Handlers.Database.Spell.pullSpells = DA.pullSpells pginfo
+             Handlers.Database.Spell.pullSpells = DA.pullSpells pginfo,
+             Handlers.Database.Spell.putSpell = DA.putSpell pginfo, --,\_ -> pure $ Right (),
+             Handlers.Database.Spell.findUserByName = \_ -> pure $ Right Nothing,
+             Handlers.Database.Spell.findPhrase = \_ -> pure $ Right Nothing,
+             Handlers.Database.Spell.createUser = \_ -> pure $ Right ()
           }
       spellHandle =
         Handlers.Web.Spell.Handle
           { Handlers.Web.Spell.logger = logHandle,
             Handlers.Web.Spell.base = baseSpellHandle,
+            Handlers.Web.Spell.revisionSpell = \_ -> pure [],
             Handlers.Web.Spell.getBody = WU.getBody
           }      
       handle =
@@ -64,8 +69,8 @@ main = do
           { Handlers.Web.Base.connectionString = pginfo,
             Handlers.Web.Base.logger = logHandle,
             Handlers.Web.Base.spell = spellHandle,
-            Handlers.Web.Base.client = Nothing,
-            Handlers.Web.Base.revisionSpell = \_ -> pure True
+            Handlers.Web.Base.client = Nothing
+            
           }        
 
   run (cPortServer config) $ authorization handle app

@@ -1,9 +1,8 @@
-module Schema (EntityField(..), SpellRevision(..), User(..),Phrase(..),Spelling(..), Spell(..), SpellResult)  where
+module Schema (EntityField(..),  User(..),Phrase(..),Spelling(..), Spell(..), Unique(..))  where
 
-import Database.Migrations.Migrationv0 (EntityField(..), SpellRevision(..), User(..),Phrase(..),Spelling(..), Spell(..), SpellResult)
+import Database.Migrations.Migrationv0 (EntityField(..), User(..),Phrase(..),Spelling(..), Spell(..), Unique(..))
 import GHC.Generics (Generic)
 import Data.Aeson (ToJSON, FromJSON)
-import Servant
 import Data.Text (toLower)
 
 

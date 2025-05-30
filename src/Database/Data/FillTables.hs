@@ -2,6 +2,7 @@ module Database.Data.FillTables (user1,user2,user3,user4,spelling1,spelling2,spe
 
 import Database.Persist.Postgresql (toSqlKey)
 import qualified Schema as S
+import Web.Types (SpellRevision(..))
 
 user1, user2, user3, user4 :: S.User
 user1 = S.User "user1"
@@ -12,11 +13,11 @@ user4 = S.User "user4"
 spelling1, spelling2, spelling3,spelling4,spelling5,spelling6 :: S.Spelling 
 -- запрос: превет москва москва как твои дила
 spelling1 = S.Spelling 
-            [S.MkSpellRevision 1 0 0 0 6 "Превет" ["Привет", "Превед"] ,
-            S.MkSpellRevision 1 21 0 21 3 "каг" ["как", "каг"] ,
-            S.MkSpellRevision 1 30 0 30 4 "дила" ["дела", "дила"]]
+            [MkSpellRevision 1 0 0 0 6 "Превет" ["Привет", "Превед"] ,
+            MkSpellRevision 1 21 0 21 3 "каг" ["как", "каг"] ,
+            MkSpellRevision 1 30 0 30 4 "дила" ["дела", "дила"]]
 
-spelling2 = S.Spelling [S.MkSpellRevision 1 2 2 2 1 "word" ["word","ward"], S.MkSpellRevision 4 3 3 3 3 "vo" ["vi","vy"]]
+spelling2 = S.Spelling [MkSpellRevision 1 2 2 2 1 "word" ["word","ward"], MkSpellRevision 4 3 3 3 3 "vo" ["vi","vy"]]
 spelling3 = S.Spelling []
 spelling4 = S.Spelling []
 spelling5 = S.Spelling []

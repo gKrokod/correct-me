@@ -8,7 +8,7 @@ import Data.Text.Encoding (encodeUtf8)
 import Data.Text (Text)
 
 import Data.Aeson (eitherDecode)
-import Schema (SpellResult)
+import Web.Types (SpellResult)
 
 
   -- startApp
