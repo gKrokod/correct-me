@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Database.Queries.Create (putSpell)  where
+module Database.Queries.Create (putSpell, createUser)  where
 
 import Control.Exception (SomeException, throw, try)
 import Database.Persist.Postgresql (rawExecute, rawSql)
@@ -36,5 +36,11 @@ putSpell pginfo (SpellInternal {..}) = do
                     spellIsApproved = False
                   }
               _ -> throw $ userError "function putNews fail"
+    )
+
+createUser :: ConnectionString -> Client -> IO (Either SomeException ())   
+createUser pginfo (Client name) = do
+  try @SomeException
+    ( runDataBaseWithOutLog pginfo $ insert_ $ User { userName = name }
     )
 

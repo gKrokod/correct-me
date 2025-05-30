@@ -1,12 +1,6 @@
-module Web.Types (Client(..), FilterBy(..), FilterFromWeb(..), SpellRevision(..),SpellResult(..)) where
+module Web.Types (Client(..), FilterBy(..), FilterFromWeb(..), SpellRevision(..),SpellResult) where
 import Data.Text (Text)  
-import Data.Aeson (FromJSON, ToJSON, eitherDecodeStrict)
-import qualified Data.ByteString as B
-import Data.ByteString.Base64 as B64
-import Data.CaseInsensitive (CI)
-import Data.Maybe (mapMaybe)
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as E
+import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics (Generic)
 
 newtype Client = Client {name :: Text}

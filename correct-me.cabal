@@ -34,6 +34,7 @@ library
       Database.Migrations.Migrationv1
       Database.Migrations.Type
       Database.Queries.Create
+      Database.Queries.Find
       Database.Queries.Get
       Database.Queries.MigrateTable
       Database.Verb
@@ -60,7 +61,7 @@ library
       Web.Query
       Web.Types
       Web.Utils
-      Yandex
+      Web.Yandex
   other-modules:
       Paths_correct_me
   autogen-modules:

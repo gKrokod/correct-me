@@ -15,8 +15,9 @@ module Database.Migrations.Migrationv0 (EntityField(..), User(..),Phrase(..),Spe
 
 import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
-import Database.Migrations.Type (MyMigration (..), createMigrateTable, EntityField(..))
+import Database.Migrations.Type (MyMigration (..), createMigrateTable)
 import Database.Persist.TH (migrateModels)
+-- import Database.Persist.Class (Unique (..))
 import Database.Persist.Class (EntityField (..), Unique (..))
 import qualified Database.Persist.TH as PTH
 import GHC.Generics (Generic)

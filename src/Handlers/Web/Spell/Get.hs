@@ -20,13 +20,10 @@ existingSpells author h req = do
       baseHandle = base h
       query = queryString req
       filterBy = queryToFilter query
-  logMessage logHandle Debug "existingSPells - here where are"
-  logMessage logHandle Debug (T.pack $ show filterBy)
   spells <- getAllSpells baseHandle author filterBy
   case spells of
     Left e -> do
       logMessage logHandle Error e
       pure WU.response500
     Right spells' -> do
-      logMessage logHandle Debug "right spells is databse"
       pure . WU.mkGoodResponse . spellsToWeb $ spells'

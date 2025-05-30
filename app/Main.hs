@@ -2,7 +2,7 @@
 
 module Main (main) where
 
-import Yandex (checkError)
+import qualified Web.Yandex as WA
 import Database.Migrations.Migration (migrationEngine) 
 import Config
 import Database.Verb (runDataBaseWithOutLog)
@@ -52,16 +52,16 @@ main = do
            { 
              Handlers.Database.Spell.logger = logHandle,
              Handlers.Database.Spell.pullSpells = DA.pullSpells pginfo,
-             Handlers.Database.Spell.putSpell = DA.putSpell pginfo, --,\_ -> pure $ Right (),
-             Handlers.Database.Spell.findUserByName = \_ -> pure $ Right Nothing,
-             Handlers.Database.Spell.findPhrase = \_ -> pure $ Right Nothing,
-             Handlers.Database.Spell.createUser = \_ -> pure $ Right ()
+             Handlers.Database.Spell.putSpell = DA.putSpell pginfo, 
+             Handlers.Database.Spell.findUserByName = DA.findUserByName pginfo,
+             Handlers.Database.Spell.findPhrase = DA.findPhrase pginfo,
+             Handlers.Database.Spell.createUser = DA.createUser pginfo
           }
       spellHandle =
         Handlers.Web.Spell.Handle
           { Handlers.Web.Spell.logger = logHandle,
             Handlers.Web.Spell.base = baseSpellHandle,
-            Handlers.Web.Spell.revisionSpell = \_ -> pure [],
+            Handlers.Web.Spell.revisionSpell = WA.revisionSpell,
             Handlers.Web.Spell.getBody = WU.getBody
           }      
       handle =
