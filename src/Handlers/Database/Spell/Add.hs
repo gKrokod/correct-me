@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Handlers.Database.Spell.Add (addSpellBase) where
+module Handlers.Database.Spell.Add (addPhraseBase) where
 
 import Control.Exception (displayException)
 import Control.Monad (when)
@@ -9,71 +9,40 @@ import qualified Data.Text as T
 import Handlers.Database.Spell (Handle (..))
 import Handlers.Logger (Log (..), logMessage)
 
--- addSpellBase :: (Monad m) => Handle m -> Title -> NewsEditInternal -> m (Either T.Text Success)
--- addSpellBase h title newsEdit@(NewsEditInternal {..}) = do
-addSpellBase h = do
-  undefined
-  -- let logHandle = logger h
-  -- existTitle <-
-  --   either
-  --     (Left . T.pack . displayException)
-  --     (maybe (Left "news don't exist") (\_ -> Right Change))
-  --     <$> findNewsByTitle h title
-  -- existNewTitle <- checkNews titleEditNews
-  -- existUser <- checkUser authorEditNews
-  -- existCategory <- checkCategory labelEditNews
-  --
-  -- case sequence_ [existTitle, existNewTitle, existUser, existCategory] of
-  --   Left e -> do
-  --     logMessage
-  --       logHandle
-  --       Warning
-  --       ( "Fail to update news with attributes: "
-  --           <> (T.pack . show) title
-  --           <> " "
-  --           <> (T.pack . show) titleEditNews
-  --           <> " "
-  --           <> (T.pack . show) authorEditNews
-  --           <> " "
-  --           <> (T.pack . show) labelEditNews
-  --           <> " "
-  --       )
-  --     logMessage logHandle Warning e
-  --     pure $ Left "fail to update news"
-  --   Right _ -> do
-  --     t <- getTime h
-  --     tryEdit <- editNews h title t newsEdit
-  --     when (isLeft tryEdit) (logMessage logHandle Handlers.Logger.Error "Can't editNews")
-  --     pure $ either (Left . T.pack . displayException) Right tryEdit
-  -- where
-  --   checkUser Nothing = pure $ Right Change
-  --   checkUser (Just login) = do
-  --     tryFindUser <- findUserByLogin h login
-  --     when (isLeft tryFindUser) (logMessage (logger h) Error "function findUserByLogin fail")
-  --     pure
-  --       ( either
-  --           (Left . T.pack . displayException)
-  --           (maybe (Left "Fail update news. User don't exist!") (\_ -> Right Change))
-  --           tryFindUser
-  --       )
-  --   checkCategory Nothing = pure (Right Change)
-  --   checkCategory (Just label) = do
-  --     tryFindCategory <- findCategoryByLabel h label
-  --     when (isLeft tryFindCategory) (logMessage (logger h) Error "function findCategoryByLabel fail")
-  --     pure
-  --       ( either
-  --           (Left . T.pack . displayException)
-  --           (maybe (Left "Fail update news. Category don't exist!") (\_ -> Right Change))
-  --           tryFindCategory
-  --       )
-  --
-  --   checkNews Nothing = pure (Right Change)
-  --   checkNews (Just titleNews) = do
-  --     tryFindNews <- findNewsByTitle h titleNews
-  --     when (isLeft tryFindNews) (logMessage (logger h) Error "function findNewsByTitle fail")
-  --     pure
-  --       ( either
-  --           (Left . T.pack . displayException)
-  --           (maybe (Right Change) (\_ -> Left $ "Fail update news. News with your title is existed! : " <> getTitle titleNews))
-  --           tryFindNews
-  --       )
+import Control.Exception (displayException)
+import Control.Monad (when)
+import Data.Either (isLeft)
+import Data.Text as T (Text,pack)
+import Handlers.Database.Spell (Handle (..))
+import Handlers.Logger (Log (..), logMessage)
+import Handlers.Web.Spell.Types (SpellInternal (..), PhraseInternal(..))
+import Network.Wai (Request, Response)
+
+addPhraseBase :: (Monad m) => Handle m -> PhraseInternal -> m (Either Text ())
+addPhraseBase h anotherPhrase@(PhraseInternal id spell@SpellInternal{..}) = do
+  let logHandle = logger h
+  existPhrase <- findPhrase h phrase
+  when (isLeft existPhrase) (logMessage logHandle Error "function findPhrase fail")
+  existUser <- findUserByName h author
+  when (isLeft existUser) (logMessage logHandle Error "function findUserByName fail")
+  existSpell <- findSpellById h id
+  when (isLeft existSpell) (logMessage logHandle Error "function findSpellById fail")
+  case (existPhrase, existUser, existSpell) of
+    (Right Nothing, Right Nothing, Right (Just _sp)) -> do
+      newUser <- createUser h author
+      case newUser of
+        Left _ -> do
+          logMessage logHandle Error ("Can't create new user")
+          pure $ Left "fail to add phrase"
+        Right _ -> do
+          tryPut <- addPhrase h anotherPhrase
+          when (isLeft tryPut) (logMessage logHandle Error "function addPhrase fail")
+          pure $ either (Left . T.pack . displayException) Right tryPut
+
+    (Right Nothing, Right (Just _user), Right (Just _sp)) -> do
+          tryPut <- addPhrase h anotherPhrase
+          when (isLeft tryPut) (logMessage logHandle Error "function addPhrase fail")
+          pure $ either (Left . T.pack . displayException) Right tryPut
+    _ -> do
+      logMessage logHandle Warning ("Fail to add phrase")
+      pure $ Left "fail to add phrase"

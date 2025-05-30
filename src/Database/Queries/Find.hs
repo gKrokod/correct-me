@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Database.Queries.Find (findUserByName, findPhrase)  where
+module Database.Queries.Find (findUserByName, findPhrase, findSpellById)  where
 
 import Control.Exception (SomeException, throw, try)
 import Database.Persist.Postgresql (rawExecute, rawSql)
@@ -28,3 +28,9 @@ findPhrase connString phrase = try @SomeException (runDataBaseWithOutLog connStr
   where
     fetchAction :: (MonadIO m) => SqlPersistT m (Maybe Phrase)
     fetchAction = (fmap . fmap) entityVal (getBy $ UniquePhraseText phrase)
+
+findSpellById :: ConnectionString -> Int64 -> IO (Either SomeException (Maybe Spell))
+findSpellById connString uid = try @SomeException (runDataBaseWithOutLog connString fetchAction)
+  where
+    fetchAction :: (MonadIO m) => SqlPersistT m (Maybe Spell)
+    fetchAction = get (toSqlKey uid)
