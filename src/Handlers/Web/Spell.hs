@@ -5,7 +5,6 @@ import qualified Handlers.Database.Spell
 import qualified Handlers.Logger
 import Network.Wai (Request)
 import Data.Text (Text)
-import Schema 
 import Web.Types (SpellResult)
 
 data Handle m = Handle

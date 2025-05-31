@@ -1,7 +1,4 @@
-{-# LANGUAGE DataKinds #-}
-
-module Handlers.Web.Base  where
-import Data.Text (Text)
+module Handlers.Web.Base (Handle(..))  where
 
 import Database.Persist.Postgresql (ConnectionString)
 import qualified Handlers.Logger
@@ -14,5 +11,4 @@ data Handle m = Handle
     logger :: Handlers.Logger.Handle m,
     spell :: Handlers.Web.Spell.Handle m, -- base this,
     client :: Maybe Client
-    -- client :: Handlers.Service.Yandex.Client m -- tyt clienta potom
   }

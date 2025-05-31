@@ -5,13 +5,9 @@ import Handlers.Database.Api (getAllSpells)
 import Handlers.Logger (logMessage, Log(..))
 import Handlers.Web.Spell (Handle (..))
 import Network.Wai (Request, Response, queryString)
-import Schema 
-import Data.Text as T (Text,pack)
 import Web.DTO.Spell (spellsToWeb)
--- import Web.Query (queryToFilters, queryToFind, queryToPaginate, queryToSort)
 import qualified Web.Utils as WU
 import Web.Query
-import Network.Wai (Request, Response, rawPathInfo, requestHeaders)
 import Web.Types(Client)
 
 existingSpells :: (Monad m) => Client -> Handle m -> Request -> m Response

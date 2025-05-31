@@ -55,6 +55,8 @@ main = do
              Handlers.Database.Spell.putSpell = DA.putSpell pginfo, 
              Handlers.Database.Spell.findUserByName = DA.findUserByName pginfo,
              Handlers.Database.Spell.findPhrase = DA.findPhrase pginfo,
+             Handlers.Database.Spell.addPhrase = DA.addPhrase pginfo,
+             Handlers.Database.Spell.findSpellById = DA.findSpellById pginfo,
              Handlers.Database.Spell.createUser = DA.createUser pginfo
           }
       spellHandle =
