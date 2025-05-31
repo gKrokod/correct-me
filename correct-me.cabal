@@ -34,6 +34,7 @@ library
       Database.Migrations.Migrationv1
       Database.Migrations.Type
       Database.Queries.Add
+      Database.Queries.Check
       Database.Queries.Create
       Database.Queries.Find
       Database.Queries.Get
