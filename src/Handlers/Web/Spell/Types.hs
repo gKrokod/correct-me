@@ -1,7 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 module Handlers.Web.Spell.Types  (SpellInternal(..),PhraseInternal(..), CheckSpellInternal(..)) where
 import Data.Text (Text)
-import Schema 
 import Web.Types(Client, SpellResult)
 import Data.Int (Int64)
 

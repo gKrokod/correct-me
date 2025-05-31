@@ -3,8 +3,8 @@
 module Database.Queries.Create (putSpell, createUser)  where
 
 import Control.Exception (SomeException, throw, try)
-import Database.Esqueleto.Experimental (keyToValues, get,valList, in_, Key, OrderBy, PersistField (..), SqlExpr, Value (..), asc, count, delete, desc, from, fromSqlKey, getBy, groupBy, innerJoin, insert, insertMany, insertMany_, just, leftJoin, like, limit, offset, on, orderBy, replace, select, table, unionAll_, val, where_, withRecursive, (%), (&&.), (++.), (:&) (..), (<.), (==.), (>=.), (?.), (^.), (||.),union_,subList_select, exists, insert_)
-import Database.Persist.Postgresql (ConnectionString, Entity (..), toSqlKey, fromSqlKey)
+import Database.Esqueleto.Experimental (  getBy,  insert,  insert_)
+import Database.Persist.Postgresql (ConnectionString, Entity (..))
 import Database.Verb (runDataBaseWithOutLog)
 import Schema 
 import Handlers.Web.Spell.Types (SpellInternal (..))
