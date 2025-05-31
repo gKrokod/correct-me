@@ -3,12 +3,11 @@
 module Database.Queries.Check (checkSpell,validCheck)  where
 
 import Control.Exception (SomeException, throw, try)
-import Database.Esqueleto.Experimental (keyToValues, get,valList, in_, Key, OrderBy, PersistField (..), SqlExpr, Value (..), asc, count, delete, desc, from, fromSqlKey, getBy, groupBy, innerJoin, insert, insertMany, insertMany_, just, leftJoin, like, limit, offset, on, orderBy, replace, select, table, unionAll_, val, where_, withRecursive, (%), (&&.), (++.), (:&) (..), (<.), (==.), (>=.), (?.), (^.), (||.),union_,subList_select, exists, insert_)
-import Database.Persist.Postgresql (ConnectionString, Entity (..), toSqlKey, fromSqlKey)
+import Database.Esqueleto.Experimental ( get, Key,  getBy,  replace)
+import Database.Persist.Postgresql (ConnectionString, Entity (..), toSqlKey)
 import Database.Verb (runDataBaseWithOutLog)
 import Schema 
-import Handlers.Web.Spell.Types (SpellInternal (..), PhraseInternal(..), CheckSpellInternal(..))
-import Web.Types(Client(..),FilterBy(..))
+import Handlers.Web.Spell.Types (CheckSpellInternal(..))
 
 checkSpell :: ConnectionString -> CheckSpellInternal -> IO (Either SomeException ())   
 checkSpell pginfo CheckSpellInternal {..} = do

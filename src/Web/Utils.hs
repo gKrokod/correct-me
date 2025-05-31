@@ -2,11 +2,9 @@ module Web.Utils (getBody, response403, response400, response404, response200, r
 
 import Data.Binary.Builder (Builder, fromByteString)
 import Data.ByteString (ByteString)
-import Data.ByteString.Base64 as B64
 import Data.Text (Text)
 import qualified Data.Text.Encoding as E
 import Network.HTTP.Types (badRequest400, forbidden403, internalServerError500, notFound404, status200)
-import Network.HTTP.Types.Header (hContentType)
 import Network.Wai (Request, Response, getRequestBodyChunk, responseBuilder)
 
 getBody :: Request -> IO ByteString

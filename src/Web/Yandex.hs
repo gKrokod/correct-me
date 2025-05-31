@@ -1,4 +1,5 @@
-module Web.Yandex (revisionSpell) where
+{-# LANGUAGE RecordWildCards #-}
+module Web.Yandex (revisionSpell, ConfigYandexService(..)) where
 
 import Network.HTTP.Simple
 import Data.Text.Encoding (encodeUtf8)
@@ -6,11 +7,22 @@ import Data.Text as T (Text, pack)
 import Data.Aeson (eitherDecode)
 import Web.Types (SpellResult)
 import Control.Exception (try, SomeException, displayException)
+import Data.Aeson (FromJSON (..), ToJSON (..))
+import GHC.Generics (Generic)
 
--- config тут еще надо
-revisionSpell :: Text -> IO (Either Text SpellResult)
-revisionSpell txt = do
-  response' <- try @SomeException . httpLBS . buildGetRequest $ txt
+data ConfigYandexService = MkConfigYandexService
+  { cHost :: Text,
+    cPath :: Text,
+    cPort :: Int,
+    cMethod :: Text,
+    cSecure :: Bool
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+revisionSpell :: ConfigYandexService -> Text -> IO (Either Text SpellResult)
+revisionSpell cfg txt = do
+  response' <- try @SomeException . httpLBS . buildGetRequest cfg $ txt
   case response' of
     Left e -> pure . Left . T.pack . displayException $  e 
     Right response -> do
@@ -25,12 +37,12 @@ revisionSpell txt = do
 -- JSON-интерфейс:
 -- https://speller.yandex.net/services/spellservice.json/checkText?text=синхрафазатрон+в+дубне
 --
-buildGetRequest :: Text -> Request
-buildGetRequest txt =
-  setRequestHost "speller.yandex.net" $
-    setRequestMethod "GET" $
-      setRequestSecure True $
+buildGetRequest :: ConfigYandexService -> Text -> Request
+buildGetRequest (MkConfigYandexService {..}) txt =
+  setRequestHost (encodeUtf8 cHost) $
+    setRequestMethod (encodeUtf8 cMethod) $
+      setRequestSecure cSecure $
         setRequestQueryString [("text", Just . encodeUtf8 $ txt)] $
-          setRequestPath "/services/spellservice.json/checkText" $
-            setRequestPort 443
+          setRequestPath (encodeUtf8 cPath) $
+            setRequestPort cPort
               defaultRequest
