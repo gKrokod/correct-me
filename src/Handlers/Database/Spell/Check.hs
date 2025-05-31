@@ -5,76 +5,27 @@ module Handlers.Database.Spell.Check (checkSpellBase) where
 import Control.Exception (displayException)
 import Control.Monad (when)
 import Data.Either (isLeft)
-import qualified Data.Text as T
 import Handlers.Database.Spell (Handle (..))
 import Handlers.Logger (Log (..), logMessage)
--- import Handlers.Web.Base (NewsEditInternal (..))
+import Data.Text as T (Text,pack)
+import Handlers.Web.Spell.Types (CheckSpellInternal(..))
 
--- checkSpellBase :: (Monad m) => Handle m -> Title -> NewsEditInternal -> m (Either T.Text Success)
--- checkSpellBase h title newsEdit@(NewsEditInternal {..}) = do
-checkSpellBase h = do
-  undefined
-  -- let logHandle = logger h
-  -- existTitle <-
-  --   either
-  --     (Left . T.pack . displayException)
-  --     (maybe (Left "news don't exist") (\_ -> Right Change))
-  --     <$> findNewsByTitle h title
-  -- existNewTitle <- checkNews titleEditNews
-  -- existUser <- checkUser authorEditNews
-  -- existCategory <- checkCategory labelEditNews
-  --
-  -- case sequence_ [existTitle, existNewTitle, existUser, existCategory] of
-  --   Left e -> do
-  --     logMessage
-  --       logHandle
-  --       Warning
-  --       ( "Fail to update news with attributes: "
-  --           <> (T.pack . show) title
-  --           <> " "
-  --           <> (T.pack . show) titleEditNews
-  --           <> " "
-  --           <> (T.pack . show) authorEditNews
-  --           <> " "
-  --           <> (T.pack . show) labelEditNews
-  --           <> " "
-  --       )
-  --     logMessage logHandle Warning e
-  --     pure $ Left "fail to update news"
-  --   Right _ -> do
-  --     t <- getTime h
-  --     tryEdit <- editNews h title t newsEdit
-  --     when (isLeft tryEdit) (logMessage logHandle Handlers.Logger.Error "Can't editNews")
-  --     pure $ either (Left . T.pack . displayException) Right tryEdit
-  -- where
-  --   checkUser Nothing = pure $ Right Change
-  --   checkUser (Just login) = do
-  --     tryFindUser <- findUserByLogin h login
-  --     when (isLeft tryFindUser) (logMessage (logger h) Error "function findUserByLogin fail")
-  --     pure
-  --       ( either
-  --           (Left . T.pack . displayException)
-  --           (maybe (Left "Fail update news. User don't exist!") (\_ -> Right Change))
-  --           tryFindUser
-  --       )
-  --   checkCategory Nothing = pure (Right Change)
-  --   checkCategory (Just label) = do
-  --     tryFindCategory <- findCategoryByLabel h label
-  --     when (isLeft tryFindCategory) (logMessage (logger h) Error "function findCategoryByLabel fail")
-  --     pure
-  --       ( either
-  --           (Left . T.pack . displayException)
-  --           (maybe (Left "Fail update news. Category don't exist!") (\_ -> Right Change))
-  --           tryFindCategory
-  --       )
-  --
-  --   checkNews Nothing = pure (Right Change)
-  --   checkNews (Just titleNews) = do
-  --     tryFindNews <- findNewsByTitle h titleNews
-  --     when (isLeft tryFindNews) (logMessage (logger h) Error "function findNewsByTitle fail")
-  --     pure
-  --       ( either
-  --           (Left . T.pack . displayException)
-  --           (maybe (Right Change) (\_ -> Left $ "Fail update news. News with your title is existed! : " <> getTitle titleNews))
-  --           tryFindNews
-  --       )
+checkSpellBase :: (Monad m) => Handle m -> CheckSpellInternal -> m (Either Text ())
+checkSpellBase h checkSp@(CheckSpellInternal {..}) = do
+  let logHandle = logger h
+  existPhrase <- findPhrase h phrase
+  when (isLeft existPhrase) (logMessage logHandle Error "function findPhrase fail")
+  existUser <- findUserByName h client
+  when (isLeft existUser) (logMessage logHandle Error "function findUserByName fail")
+  existSpell <- findSpellById h idSpell
+  when (isLeft existSpell) (logMessage logHandle Error "function findSpellById fail")
+  phraseFromSpell <- validCheck h checkSp
+  when (isLeft phraseFromSpell) (logMessage logHandle Error "function phraseFromSpell")
+  case (existPhrase, existUser, existSpell, phraseFromSpell) of
+    (Right (Just _), Right (Just _), Right (Just _), Right True) -> do
+          tryCheck <- checkSpell h checkSp
+          when (isLeft tryCheck) (logMessage logHandle Warning "function checkSpell fail")
+          pure $ either (Left . T.pack . displayException) Right tryCheck
+    _ -> do
+      logMessage logHandle Warning ("Fail to check spell")
+      pure $ Left "fail to check spell"

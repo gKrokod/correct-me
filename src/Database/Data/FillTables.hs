@@ -30,7 +30,7 @@ phrase2 = S.Phrase "second phrase word vo" (toSqlKey 2) (toSqlKey 2)
 phrase3 = S.Phrase "third phrase" (toSqlKey 3) (toSqlKey 3)
 phrase4 = S.Phrase "Angle" (toSqlKey 4) (toSqlKey 4)
 phrase5 = S.Phrase "angle" (toSqlKey 2) (toSqlKey 5)
-phrase6 = S.Phrase "Angles'" (toSqlKey 3) (toSqlKey 6)
+phrase6 = S.Phrase "Angless" (toSqlKey 3) (toSqlKey 6)
 
 spell1,spell2 ,spell3:: S.Spell
 spell1 = S.Spell (toSqlKey 1) [] False

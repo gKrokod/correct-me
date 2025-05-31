@@ -34,8 +34,11 @@ endPointSpell h req = do
           Handlers.Logger.logMessage logHandle Handlers.Logger.Warning "Access denied"
           pure WU.response403
     "/spell/check" -> do
-      undefined
+      case clientName of
+        Just name -> checkSpell name spellHandle req
+        _ -> do
+          Handlers.Logger.logMessage logHandle Handlers.Logger.Warning "Access denied"
+          pure WU.response403
     _ -> do
-      -- error "not end point"
       Handlers.Logger.logMessage logHandle Handlers.Logger.Warning "End point not found"
       pure WU.response404

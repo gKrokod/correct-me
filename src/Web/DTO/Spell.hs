@@ -1,6 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 
-module Web.DTO.Spell (spellsToWeb, PhraseToWeb(..), SpellToWeb(..), webToPhrase, PhraseFromWeb(..), AnotherPhraseFromWeb(..),webToAnotherPhrase) where
+module Web.DTO.Spell (spellsToWeb, PhraseToWeb(..), SpellToWeb(..), webToPhrase, PhraseFromWeb(..), AnotherPhraseFromWeb(..),webToAnotherPhrase, CheckSpellFromWeb(..), webToCheckSpellFromWeb) where
 
 import Data.Aeson (FromJSON, ToJSON, eitherDecodeStrict, encode)
 import Data.Binary.Builder (Builder, fromLazyByteString)
@@ -46,3 +46,12 @@ data AnotherPhraseFromWeb = AnotherPhraseFromWeb
 
 webToAnotherPhrase :: B.ByteString -> Either String AnotherPhraseFromWeb
 webToAnotherPhrase = eitherDecodeStrict @AnotherPhraseFromWeb
+
+data CheckSpellFromWeb = CheckSpellFromWeb
+  { id :: Int64,
+    phrase :: Text}
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON)
+
+webToCheckSpellFromWeb :: B.ByteString -> Either String CheckSpellFromWeb
+webToCheckSpellFromWeb = eitherDecodeStrict @CheckSpellFromWeb

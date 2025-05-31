@@ -1,4 +1,5 @@
-module Handlers.Web.Spell.Types  (SpellInternal(..),PhraseInternal(..)) where
+{-# LANGUAGE DuplicateRecordFields #-}
+module Handlers.Web.Spell.Types  (SpellInternal(..),PhraseInternal(..), CheckSpellInternal(..)) where
 import Data.Text (Text)
 import Schema 
 import Web.Types(Client, SpellResult)
@@ -13,4 +14,10 @@ data SpellInternal = SpellInternal
 data PhraseInternal = PhraseInternal
   { idSpell :: Int64,
     anotherPhrase :: SpellInternal
+  }
+
+data CheckSpellInternal = CheckSpellInternal
+  { idSpell :: Int64,
+    client :: Client,
+    phrase :: Text
   }
