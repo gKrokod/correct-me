@@ -9,9 +9,6 @@ import Data.Text as T (Text,pack)
 import Handlers.Database.Spell (Handle (..))
 import Handlers.Logger (Log (..), logMessage)
 import Handlers.Web.Spell.Types (SpellInternal (..))
-import Handlers.Web.Spell.Types (SpellInternal (..))
-import Network.Wai (Request, Response)
-
 
 createSpellBase :: (Monad m) => Handle m -> SpellInternal -> m (Either Text ())
 createSpellBase h spell@(SpellInternal {..}) = do

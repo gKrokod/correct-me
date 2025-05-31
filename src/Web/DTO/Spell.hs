@@ -7,7 +7,6 @@ import Data.Binary.Builder (Builder, fromLazyByteString)
 import qualified Data.ByteString as B
 import  Data.Text (Text)
 import GHC.Generics (Generic)
-import Schema 
 import Data.Int (Int64)
 import Web.Types (SpellResult)
 

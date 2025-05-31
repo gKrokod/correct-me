@@ -5,21 +5,13 @@ module Handlers.Database.Spell.Add (addPhraseBase) where
 import Control.Exception (displayException)
 import Control.Monad (when)
 import Data.Either (isLeft)
-import qualified Data.Text as T
 import Handlers.Database.Spell (Handle (..))
 import Handlers.Logger (Log (..), logMessage)
-
-import Control.Exception (displayException)
-import Control.Monad (when)
-import Data.Either (isLeft)
 import Data.Text as T (Text,pack)
-import Handlers.Database.Spell (Handle (..))
-import Handlers.Logger (Log (..), logMessage)
 import Handlers.Web.Spell.Types (SpellInternal (..), PhraseInternal(..))
-import Network.Wai (Request, Response)
 
 addPhraseBase :: (Monad m) => Handle m -> PhraseInternal -> m (Either Text ())
-addPhraseBase h anotherPhrase@(PhraseInternal id spell@SpellInternal{..}) = do
+addPhraseBase h anotherPhrase@(PhraseInternal id SpellInternal{..}) = do
   let logHandle = logger h
   existPhrase <- findPhrase h phrase
   when (isLeft existPhrase) (logMessage logHandle Error "function findPhrase fail")
@@ -38,7 +30,6 @@ addPhraseBase h anotherPhrase@(PhraseInternal id spell@SpellInternal{..}) = do
           tryPut <- addPhrase h anotherPhrase
           when (isLeft tryPut) (logMessage logHandle Error "function addPhrase fail")
           pure $ either (Left . T.pack . displayException) Right tryPut
-
     (Right Nothing, Right (Just _user), Right (Just _sp)) -> do
           tryPut <- addPhrase h anotherPhrase
           when (isLeft tryPut) (logMessage logHandle Error "function addPhrase fail")

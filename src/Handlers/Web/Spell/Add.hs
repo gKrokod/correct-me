@@ -23,21 +23,17 @@ addPhrase author h req = do
     Left e -> do
       logMessage logHandle Error (T.pack e)
       pure (WU.response400 . T.pack $ e)
+    Right (AnotherPhraseFromWeb id _) | id < 1 -> do
+      let e = "id from request < 1"
+      logMessage logHandle Error e
+      pure (WU.response400 e)
     Right (AnotherPhraseFromWeb {..}) -> do
       revi <- revisionSpell h phrase 
       when (isLeft revi) (logMessage logHandle Warning (fromLeft "function revisionSpell fail" revi))
       tryAddPhrase <-
         addPhraseBase
           baseHandle
-          ( PhraseInternal {
-              idSpell = id,
-              anotherPhrase = SpellInternal
-                { phrase = phrase,
-                  author = author,
-                  revision = fromRight [] revi
-                }
-                           }
-          )
+          ( PhraseInternal { idSpell = id, anotherPhrase = SpellInternal { phrase = phrase, author = author, revision = fromRight [] revi } })
       case tryAddPhrase of
         Right _ ->
           pure WU.response200

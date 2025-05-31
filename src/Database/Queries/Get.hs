@@ -2,20 +2,17 @@
 
 module Database.Queries.Get (pullSpells)  where
 
-import Control.Exception (SomeException, throw, try)
-import Database.Persist.Postgresql (rawExecute, rawSql)
+import Control.Exception (SomeException, try)
 import Control.Monad.IO.Class (MonadIO)
-import  Data.Text (Text)
 import Database.Esqueleto.Experimental (keyToValues, get,valList, in_, Key, OrderBy, PersistField (..), SqlExpr, Value (..), asc, count, delete, desc, from, fromSqlKey, getBy, groupBy, innerJoin, insert, insertMany, insertMany_, just, leftJoin, like, limit, offset, on, orderBy, replace, select, table, unionAll_, val, where_, withRecursive, (%), (&&.), (++.), (:&) (..), (<.), (==.), (>=.), (?.), (^.), (||.),union_,subList_select, exists)
 import Database.Persist.Postgresql (ConnectionString, Entity (..), toSqlKey, fromSqlKey)
 import Database.Persist.Sql (SqlPersistT)
 import Database.Verb (runDataBaseWithOutLog)
 import Schema 
-import Data.Int
 import Web.DTO.Spell
 import Web.Types(Client(..),FilterBy(..))
 
-pullSpells :: ConnectionString -> Client -> Maybe FilterBy -> IO (Either SomeException [SpellToWeb])   --user name -> filter ->...
+pullSpells :: ConnectionString -> Client -> Maybe FilterBy -> IO (Either SomeException [SpellToWeb])
 pullSpells connString (Client author) mbFilter = do
   try @SomeException (runDataBaseWithOutLog connString fetchAction)
     where
