@@ -3,7 +3,7 @@ module Handlers.Web.Spell.SpellApi (endPointSpell) where
 import qualified Handlers.Logger
 import Handlers.Web.Base (Handle (..))
 import Handlers.Web.Spell.Add (addPhrase)
-import Handlers.Web.Spell.Check
+import Handlers.Web.Spell.Check (checkSpell)
 import Handlers.Web.Spell.Create (createSpell)
 import Handlers.Web.Spell.Get (existingSpells)
 import Network.Wai (Request, Response, rawPathInfo)

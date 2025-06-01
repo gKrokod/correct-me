@@ -33,9 +33,6 @@ pullSpells connString (Client author) mbFilter = do
           ( \case
               OwnSpells -> where_ (users ^. UserName ==. val author)
               NotApproved -> where_ (spells ^. SpellIsApproved ==. val False)
-              -- OwnAndNot -> where_ ( (users ^. UserName ==. val author)
-              --                       ||.(spells ^. SpellIsApproved ==. val False)
-              --                     )
           )
           mbFilter
         pure spells

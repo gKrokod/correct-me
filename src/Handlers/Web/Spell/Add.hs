@@ -2,8 +2,8 @@
 
 module Handlers.Web.Spell.Add (addPhrase) where
 
-import Control.Monad
-import Data.Either
+import Control.Monad (when)
+import Data.Either (isLeft, fromLeft, fromRight)
 import qualified Data.Text as T
 import Handlers.Database.Api (addPhraseBase)
 import Handlers.Logger (Log (..), logMessage)

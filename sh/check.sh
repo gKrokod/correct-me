@@ -1,4 +1,6 @@
 #!/bin/bash
+#!/bin/bash
+#
 echo "\nCheck 3 spell. User from base"
 curl -X POST user4@127.0.0.1:4221/spell/check -H "Content-Type: application/json" -d '{"id":3,"phrase":"Angless"}'
 echo "\nCheck. Unknow User"

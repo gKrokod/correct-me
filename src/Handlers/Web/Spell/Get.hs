@@ -1,12 +1,11 @@
 module Handlers.Web.Spell.Get (existingSpells) where
 
 import Handlers.Database.Api (getAllSpells)
--- import Handlers.Database.Base (Limit (..), Offset (..))
 import Handlers.Logger (Log (..), logMessage)
 import Handlers.Web.Spell (Handle (..))
 import Network.Wai (Request, Response, queryString)
 import Web.DTO.Spell (spellsToWeb)
-import Web.Query
+import Web.Query (queryToFilter)
 import Web.Types (Client)
 import qualified Web.Utils as WU
 

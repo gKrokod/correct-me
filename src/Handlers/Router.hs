@@ -1,17 +1,8 @@
 module Handlers.Router (doLogic, doAuthorization) where
 
--- import Control.Monad (when)
--- import Control.Monad.Except (ExceptT (..), runExceptT)
--- import Data.Bool (bool)
 import qualified Data.ByteString as B
--- import Data.Maybe (isNothing)
--- import qualified Data.Text as T
--- import Handlers.Database.Api (getPrivilege, getResultValid)
--- import Handlers.Database.Auth (Client (..))
 import qualified Handlers.Logger
 import Handlers.Web.Api (endPointSpell)
--- import Schema (IsValidPassword (..))
--- import Types (Login (..), PasswordUser (..))
 
 import Handlers.Web.Base (Handle (..))
 import Network.Wai (Request, Response, rawPathInfo, requestHeaders)

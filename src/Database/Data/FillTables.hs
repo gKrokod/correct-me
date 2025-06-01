@@ -11,7 +11,6 @@ user3 = S.User "user3"
 user4 = S.User "user4"
 
 spelling1, spelling2, spelling3, spelling4, spelling5, spelling6 :: S.Spelling
--- запрос: превет москва москва как твои дила
 spelling1 =
   S.Spelling
     [ MkSpellRevision 1 0 0 0 6 "Превет" ["Привет", "Превед"],
