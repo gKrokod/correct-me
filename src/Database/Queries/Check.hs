@@ -7,14 +7,15 @@ import Database.Esqueleto.Experimental (Key, get, getBy, replace)
 import Database.Persist.Postgresql (ConnectionString, Entity (..), toSqlKey)
 import Database.Verb (runDataBaseWithOutLog)
 import Handlers.Web.Spell.Types (CheckSpellInternal (..))
-import Schema
+import Schema (Unique(..),Spell(..))
+import Web.Types (Id(..))
 
 checkSpell :: ConnectionString -> CheckSpellInternal -> IO (Either SomeException ())
 checkSpell pginfo CheckSpellInternal {..} = do
   try @SomeException
     ( runDataBaseWithOutLog pginfo $ do
         keyPhrase <- (fmap . fmap) entityKey (getBy . UniquePhraseText $ phrase)
-        let spellKey = toSqlKey idSpell :: Key Spell
+        let spellKey = toSqlKey (giveId idSpell) :: Key Spell
         maybeSpell <- get spellKey
         case (keyPhrase, maybeSpell) of
           (Just keyPhrase, Just spell) -> do
@@ -28,7 +29,7 @@ validCheck pginfo CheckSpellInternal {..} = do
   try @SomeException
     ( runDataBaseWithOutLog pginfo $ do
         keyPhrase <- (fmap . fmap) entityKey (getBy . UniquePhraseText $ phrase)
-        let spellKey = toSqlKey idSpell :: Key Spell
+        let spellKey = toSqlKey (giveId idSpell) :: Key Spell
         maybeSpell <- get spellKey
         case (keyPhrase, maybeSpell) of
           (Just keyPhrase, Just spell) -> pure $ elem keyPhrase $ (:) <$> spellPhraseId <*> spellParaphrasesId $ spell

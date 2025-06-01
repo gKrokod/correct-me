@@ -2,9 +2,8 @@
 
 module Handlers.Web.Spell.Types (SpellInternal (..), PhraseInternal (..), CheckSpellInternal (..)) where
 
-import Data.Int (Int64)
 import Data.Text (Text)
-import Web.Types (Client, SpellResult)
+import Web.Types (Client, SpellResult, Id)
 
 data SpellInternal = SpellInternal
   { phrase :: Text,
@@ -13,12 +12,12 @@ data SpellInternal = SpellInternal
   }
 
 data PhraseInternal = PhraseInternal
-  { idSpell :: Int64,
+  { idSpell :: Id,
     anotherPhrase :: SpellInternal
   }
 
 data CheckSpellInternal = CheckSpellInternal
-  { idSpell :: Int64,
+  { idSpell :: Id,
     client :: Client,
     phrase :: Text
   }

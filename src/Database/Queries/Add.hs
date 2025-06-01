@@ -8,10 +8,10 @@ import Database.Persist.Postgresql (ConnectionString, Entity (..), toSqlKey)
 import Database.Verb (runDataBaseWithOutLog)
 import Handlers.Web.Spell.Types (PhraseInternal (..), SpellInternal (..))
 import Schema
-import Web.Types (Client (..))
+import Web.Types (Client (..), Id(..))
 
 addPhrase :: ConnectionString -> PhraseInternal -> IO (Either SomeException ())
-addPhrase pginfo (PhraseInternal id (SpellInternal {..})) = do
+addPhrase pginfo (PhraseInternal (MkId id) (SpellInternal {..})) = do
   try @SomeException
     ( runDataBaseWithOutLog pginfo $ do
         keyUser <- (fmap . fmap) entityKey (getBy . UniqueUserName . name $ author)

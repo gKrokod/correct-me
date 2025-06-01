@@ -6,8 +6,8 @@ import Database.Esqueleto.Experimental (Key, Value (..), from, groupBy, innerJoi
 import Database.Persist.Postgresql (ConnectionString, Entity (..), fromSqlKey)
 import Database.Persist.Sql (SqlPersistT)
 import Database.Verb (runDataBaseWithOutLog)
-import Schema
-import Web.DTO.Spell
+import Schema (User, Phrase, Spell(..), Spelling(..), EntityField (..))
+import Web.DTO.Spell (SpellToWeb(..), PhraseToWeb(..))
 import Web.Types (Client (..), FilterBy (..))
 
 pullSpells :: ConnectionString -> Client -> Maybe FilterBy -> IO (Either SomeException [SpellToWeb])
