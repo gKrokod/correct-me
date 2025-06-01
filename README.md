@@ -75,3 +75,8 @@ curl -X POST user@127.0.0.1:4221/spell/add \
 
 ## Аутентификация
 Сервис использует базовую аутентификацию через URL в формате `user@host:port`
+
+## Схема базы данных
+
+
+![spellserver](https://github.com/user-attachments/assets/8e6343e8-01d0-422b-9ff6-b850ea69ac20)
