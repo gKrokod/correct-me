@@ -7,8 +7,8 @@ import Database.Esqueleto.Experimental (getBy, insert, insert_)
 import Database.Persist.Postgresql (ConnectionString, Entity (..))
 import Database.Verb (runDataBaseWithOutLog)
 import Handlers.Web.Spell.Types (SpellInternal (..))
-import Schema
-import Web.Types (Client (..))
+import Schema (Unique(..),User(..), Phrase(..), Spell(..), Spelling(..))
+import Web.Types (Client (..), TextPhrase(..))
 
 putSpell :: ConnectionString -> SpellInternal -> IO (Either SomeException ())
 putSpell pginfo (SpellInternal {..}) = do
@@ -21,7 +21,7 @@ putSpell pginfo (SpellInternal {..}) = do
             keyPhrase <-
               insert $
                 Phrase
-                  { phraseText = phrase,
+                  { phraseText = giveText phrase,
                     phraseUserId = keyUsr,
                     phraseSpellingId = keySpelling
                   }

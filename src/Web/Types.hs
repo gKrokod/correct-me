@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Web.Types (Client (..), FilterBy (..), FilterFromWeb (..), SpellRevision (..), SpellResult, Id(..)) where
+module Web.Types (Client (..), FilterBy (..), FilterFromWeb (..), SpellRevision (..), SpellResult, Id(..), TextPhrase(..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
@@ -11,6 +11,7 @@ import qualified Database.Persist.TH as PTH
 
 newtype Client = Client {name :: Text}
 newtype Id = MkId {giveId :: Int64}
+newtype TextPhrase = MkTextPhrase {giveText :: Text}
 
 data FilterBy = NotApproved | OwnSpells -- OwnSpells and NotApproved?
   deriving stock (Show, Eq, Generic, Ord)

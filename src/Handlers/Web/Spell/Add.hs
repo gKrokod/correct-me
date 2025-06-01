@@ -11,7 +11,7 @@ import Handlers.Web.Spell (Handle (..))
 import Handlers.Web.Spell.Types (PhraseInternal (..), SpellInternal (..))
 import Network.Wai (Request, Response)
 import Web.DTO.Spell (AnotherPhraseFromWeb (..), webToAnotherPhrase)
-import Web.Types (Client, Id(..))
+import Web.Types (Client, Id(..), TextPhrase(..))
 import qualified Web.Utils as WU
 
 addPhrase :: (Monad m) => Client -> Handle m -> Request -> m Response
@@ -33,7 +33,7 @@ addPhrase author h req = do
       tryAddPhrase <-
         addPhraseBase
           baseHandle
-          (PhraseInternal {idSpell = MkId id, anotherPhrase = SpellInternal {phrase = phrase, author = author, revision = fromRight [] revi}})
+          (PhraseInternal {idSpell = MkId id, anotherPhrase = SpellInternal {phrase = MkTextPhrase phrase, author = author, revision = fromRight [] revi}})
       case tryAddPhrase of
         Right _ ->
           pure WU.response200

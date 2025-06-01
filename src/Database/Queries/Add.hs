@@ -8,7 +8,7 @@ import Database.Persist.Postgresql (ConnectionString, Entity (..), toSqlKey)
 import Database.Verb (runDataBaseWithOutLog)
 import Handlers.Web.Spell.Types (PhraseInternal (..), SpellInternal (..))
 import Schema
-import Web.Types (Client (..), Id(..))
+import Web.Types (Client (..), Id(..), TextPhrase(..))
 
 addPhrase :: ConnectionString -> PhraseInternal -> IO (Either SomeException ())
 addPhrase pginfo (PhraseInternal (MkId id) (SpellInternal {..})) = do
@@ -23,7 +23,7 @@ addPhrase pginfo (PhraseInternal (MkId id) (SpellInternal {..})) = do
             keyPhrase <-
               insert $
                 Phrase
-                  { phraseText = phrase,
+                  { phraseText = giveText phrase,
                     phraseUserId = keyUsr,
                     phraseSpellingId = keySpelling
                   }

@@ -11,7 +11,7 @@ import Handlers.Web.Spell (Handle (..))
 import Handlers.Web.Spell.Types (SpellInternal (..))
 import Network.Wai (Request, Response)
 import Web.DTO.Spell (PhraseFromWeb (..), webToPhrase)
-import Web.Types (Client)
+import Web.Types (Client, TextPhrase(..))
 import qualified Web.Utils as WU
 
 createSpell :: (Monad m) => Client -> Handle m -> Request -> m Response
@@ -30,7 +30,7 @@ createSpell author h req = do
         createSpellBase
           baseHandle
           ( SpellInternal
-              { phrase = phrase,
+              { phrase = MkTextPhrase phrase,
                 author = author,
                 revision = fromRight [] revi
               }

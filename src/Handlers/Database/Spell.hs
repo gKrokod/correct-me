@@ -1,12 +1,11 @@
 module Handlers.Database.Spell (Handle (..)) where
 
 import Control.Exception (SomeException)
-import Data.Text (Text)
 import qualified Handlers.Logger
 import Handlers.Web.Spell.Types
 import Schema (User, Spell, Phrase)
 import Web.DTO.Spell
-import Web.Types (Id(..),Client(..), FilterBy)
+import Web.Types (Id,Client, FilterBy, TextPhrase)
 
 data Handle m = Handle
   { logger :: Handlers.Logger.Handle m,
@@ -17,6 +16,6 @@ data Handle m = Handle
     validCheck :: CheckSpellInternal -> m (Either SomeException Bool),
     findUserByName :: Client -> m (Either SomeException (Maybe User)),
     findSpellById :: Id -> m (Either SomeException (Maybe Spell)),
-    findPhrase :: Text -> m (Either SomeException (Maybe Phrase)),
+    findPhrase :: TextPhrase -> m (Either SomeException (Maybe Phrase)),
     createUser :: Client -> m (Either SomeException ())
   }

@@ -8,13 +8,13 @@ import Database.Persist.Postgresql (ConnectionString, Entity (..), toSqlKey)
 import Database.Verb (runDataBaseWithOutLog)
 import Handlers.Web.Spell.Types (CheckSpellInternal (..))
 import Schema (Unique(..),Spell(..))
-import Web.Types (Id(..))
+import Web.Types (Id(..), TextPhrase(..))
 
 checkSpell :: ConnectionString -> CheckSpellInternal -> IO (Either SomeException ())
 checkSpell pginfo CheckSpellInternal {..} = do
   try @SomeException
     ( runDataBaseWithOutLog pginfo $ do
-        keyPhrase <- (fmap . fmap) entityKey (getBy . UniquePhraseText $ phrase)
+        keyPhrase <- (fmap . fmap) entityKey (getBy . UniquePhraseText . giveText $ phrase)
         let spellKey = toSqlKey (giveId idSpell) :: Key Spell
         maybeSpell <- get spellKey
         case (keyPhrase, maybeSpell) of
@@ -28,7 +28,7 @@ validCheck :: ConnectionString -> CheckSpellInternal -> IO (Either SomeException
 validCheck pginfo CheckSpellInternal {..} = do
   try @SomeException
     ( runDataBaseWithOutLog pginfo $ do
-        keyPhrase <- (fmap . fmap) entityKey (getBy . UniquePhraseText $ phrase)
+        keyPhrase <- (fmap . fmap) entityKey (getBy . UniquePhraseText . giveText $ phrase)
         let spellKey = toSqlKey (giveId idSpell) :: Key Spell
         maybeSpell <- get spellKey
         case (keyPhrase, maybeSpell) of
