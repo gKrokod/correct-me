@@ -1,17 +1,15 @@
-{-# LANGUAGE RecordWildCards #-}
-
-module Database.Queries.Find (findUserByName, findPhrase, findSpellById)  where
+module Database.Queries.Find (findUserByName, findPhrase, findSpellById) where
 
 import Control.Exception (SomeException, try)
 import Control.Monad.IO.Class (MonadIO)
-import  Data.Text (Text)
-import Database.Esqueleto.Experimental (getBy, get) 
+import Data.Int
+import Data.Text (Text)
+import Database.Esqueleto.Experimental (get, getBy)
 import Database.Persist.Postgresql (ConnectionString, Entity (..), toSqlKey)
 import Database.Persist.Sql (SqlPersistT)
 import Database.Verb (runDataBaseWithOutLog)
-import Schema 
-import Data.Int
-import Web.Types(Client(..))
+import Schema
+import Web.Types (Client (..))
 
 findUserByName :: ConnectionString -> Client -> IO (Either SomeException (Maybe User))
 findUserByName connString author = try @SomeException (runDataBaseWithOutLog connString fetchAction)

@@ -1,4 +1,4 @@
-module Web.Query (queryToFilter, headersToLoginAndPassword)  where
+module Web.Query (queryToFilter, headersToLoginAndPassword) where
 
 import Data.Aeson (eitherDecodeStrict)
 import qualified Data.ByteString as B
@@ -7,7 +7,7 @@ import Data.CaseInsensitive (CI)
 import Data.Maybe (mapMaybe)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as E
-import Web.Types (FilterBy(..), FilterFromWeb(..))
+import Web.Types (FilterBy (..), FilterFromWeb (..))
 
 --
 queryToFilter :: [(B.ByteString, Maybe B.ByteString)] -> Maybe FilterBy

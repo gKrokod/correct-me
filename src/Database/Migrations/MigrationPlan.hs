@@ -8,4 +8,3 @@ type MigrationPlan = [MyMigration]
 
 migrationPlan :: MigrationPlan
 migrationPlan = [migrateVer0, migrateVer1]
-      

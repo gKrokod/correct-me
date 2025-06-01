@@ -1,10 +1,10 @@
 module Main (main) where
 
-import qualified Database.Api as DA
-import Config (connectionString, loadConfigDataBase, loadConfigService, makeSetup, ServerSetup, ConfigDataBase(..))
+import Config (ConfigDataBase (..), ServerSetup, connectionString, loadConfigDataBase, loadConfigService, makeSetup)
 import Control.Exception (bracket_)
+import qualified Database.Api as DA
 import Handlers.Logger (Log (Info), logMessage)
-import Handlers.Router (doLogic, doAuthorization)
+import Handlers.Router (doAuthorization, doLogic)
 import Handlers.Web.Base (logger)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (run)

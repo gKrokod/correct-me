@@ -1,23 +1,23 @@
 -- {-# LANGUAGE DeriveAnyClass #-}
 -- {-# LANGUAGE DerivingStrategies #-}
 --
-module Config (makeSetup, loadConfigDataBase, connectionString, ServerSetup, ConfigDataBase(..), loadConfigService) where
+module Config (makeSetup, loadConfigDataBase, connectionString, ServerSetup, ConfigDataBase (..), loadConfigService) where
 
-import Web.Yandex (ConfigYandexService(..), revisionSpell)
 import Control.Exception (SomeException, displayException, throwIO, try)
 import Data.Aeson (FromJSON (..), ToJSON (..), eitherDecode)
 import qualified Data.ByteString.Lazy as L
-import GHC.Generics (Generic)
 import Data.Text (Text)
-import  Data.Text.Encoding (encodeUtf8)
-import Database.Persist.Postgresql (ConnectionString)
+import Data.Text.Encoding (encodeUtf8)
 import qualified Database.Api as DA
+import Database.Persist.Postgresql (ConnectionString)
+import GHC.Generics (Generic)
 import qualified Handlers.Database.Spell
 import Handlers.Logger
 import qualified Handlers.Web.Base
 import qualified Handlers.Web.Spell
 import qualified Logger
 import qualified Web.Utils as WU
+import Web.Yandex (ConfigYandexService (..), revisionSpell)
 
 data ConfigDataBase = MkConfigDataBase
   { cHostDB :: Text,
@@ -30,7 +30,6 @@ data ConfigDataBase = MkConfigDataBase
   }
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
-
 
 loadConfigDB :: IO (Either String ConfigDataBase)
 loadConfigDB =
@@ -47,7 +46,7 @@ loadConfigDataBase = do
 loadConfigYandexService :: IO (Either String ConfigYandexService)
 loadConfigYandexService =
   either (Left . displayException) eitherDecode
-    <$> try @SomeException (L.readFile "config/spellService.config" )
+    <$> try @SomeException (L.readFile "config/spellService.config")
 
 loadConfigService :: IO ConfigYandexService
 loadConfigService = do
@@ -99,30 +98,28 @@ connectionString cfg =
 --   let configToJSON = encode testConfig :: L.ByteString
 --   L.writeFile "config/spellService.config" configToJSON
 
-
 type ServerSetup m = Handlers.Web.Base.Handle m
 
 makeSetup :: ConfigDataBase -> ConfigYandexService -> IO (ServerSetup IO)
 makeSetup cfgDB cfgServ = do
   let pginfo = connectionString cfgDB
   let logHandle =
-         Handlers.Logger.Handle
-           { Handlers.Logger.levelLogger = cLogLvl cfgDB,
-             Handlers.Logger.writeLog = Logger.writeLog
+        Handlers.Logger.Handle
+          { Handlers.Logger.levelLogger = cLogLvl cfgDB,
+            Handlers.Logger.writeLog = Logger.writeLog
           }
       baseSpellHandle =
-         Handlers.Database.Spell.Handle
-           { 
-             Handlers.Database.Spell.logger = logHandle,
-             Handlers.Database.Spell.pullSpells = DA.pullSpells pginfo,
-             Handlers.Database.Spell.putSpell = DA.putSpell pginfo, 
-             Handlers.Database.Spell.findUserByName = DA.findUserByName pginfo,
-             Handlers.Database.Spell.findPhrase = DA.findPhrase pginfo,
-             Handlers.Database.Spell.checkSpell = DA.checkSpell pginfo,
-             Handlers.Database.Spell.validCheck = DA.validCheck pginfo,
-             Handlers.Database.Spell.addPhrase = DA.addPhrase pginfo,
-             Handlers.Database.Spell.findSpellById = DA.findSpellById pginfo,
-             Handlers.Database.Spell.createUser = DA.createUser pginfo
+        Handlers.Database.Spell.Handle
+          { Handlers.Database.Spell.logger = logHandle,
+            Handlers.Database.Spell.pullSpells = DA.pullSpells pginfo,
+            Handlers.Database.Spell.putSpell = DA.putSpell pginfo,
+            Handlers.Database.Spell.findUserByName = DA.findUserByName pginfo,
+            Handlers.Database.Spell.findPhrase = DA.findPhrase pginfo,
+            Handlers.Database.Spell.checkSpell = DA.checkSpell pginfo,
+            Handlers.Database.Spell.validCheck = DA.validCheck pginfo,
+            Handlers.Database.Spell.addPhrase = DA.addPhrase pginfo,
+            Handlers.Database.Spell.findSpellById = DA.findSpellById pginfo,
+            Handlers.Database.Spell.createUser = DA.createUser pginfo
           }
       spellHandle =
         Handlers.Web.Spell.Handle
@@ -130,12 +127,12 @@ makeSetup cfgDB cfgServ = do
             Handlers.Web.Spell.base = baseSpellHandle,
             Handlers.Web.Spell.revisionSpell = revisionSpell cfgServ,
             Handlers.Web.Spell.getBody = WU.getBody
-          }      
+          }
       handle =
         Handlers.Web.Base.Handle
           { Handlers.Web.Base.connectionString = pginfo,
             Handlers.Web.Base.logger = logHandle,
             Handlers.Web.Base.spell = spellHandle,
             Handlers.Web.Base.client = Nothing
-          }        
+          }
   pure handle

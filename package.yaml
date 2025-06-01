@@ -50,14 +50,11 @@ library:
     - http-types
     - mtl
     - warp
-    - servant-server
     - monad-logger
     - http-conduit
-    - transformers
     - case-insensitive
     - http-types
     - base64
-    - binary
     - binary
 
 executables:
@@ -71,14 +68,7 @@ executables:
     dependencies:
     - correct-me
     - warp
-    - persistent-postgresql
     - wai
-    - text
-    - time
-    - servant-server
-    - aeson
-    - http-conduit
-    - bytestring
 
 tests:
   correct-me-test:
@@ -90,6 +80,7 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - correct-me
+    - mtl
     - hspec
     - QuickCheck
     - text

@@ -2,13 +2,13 @@ module Handlers.Web.Spell.Get (existingSpells) where
 
 import Handlers.Database.Api (getAllSpells)
 -- import Handlers.Database.Base (Limit (..), Offset (..))
-import Handlers.Logger (logMessage, Log(..))
+import Handlers.Logger (Log (..), logMessage)
 import Handlers.Web.Spell (Handle (..))
 import Network.Wai (Request, Response, queryString)
 import Web.DTO.Spell (spellsToWeb)
-import qualified Web.Utils as WU
 import Web.Query
-import Web.Types(Client)
+import Web.Types (Client)
+import qualified Web.Utils as WU
 
 existingSpells :: (Monad m) => Client -> Handle m -> Request -> m Response
 existingSpells author h req = do

@@ -1,14 +1,14 @@
 {-# LANGUAGE RecordWildCards #-}
-module Web.Yandex (revisionSpell, ConfigYandexService(..)) where
 
-import Network.HTTP.Simple
-import Data.Text.Encoding (encodeUtf8)
+module Web.Yandex (revisionSpell, ConfigYandexService (..)) where
+
+import Control.Exception (SomeException, displayException, try)
+import Data.Aeson (FromJSON (..), ToJSON (..), eitherDecode)
 import Data.Text as T (Text, pack)
-import Data.Aeson (eitherDecode)
-import Web.Types (SpellResult)
-import Control.Exception (try, SomeException, displayException)
-import Data.Aeson (FromJSON (..), ToJSON (..))
+import Data.Text.Encoding (encodeUtf8)
 import GHC.Generics (Generic)
+import Network.HTTP.Simple
+import Web.Types (SpellResult)
 
 data ConfigYandexService = MkConfigYandexService
   { cHost :: Text,
@@ -24,11 +24,11 @@ revisionSpell :: ConfigYandexService -> Text -> IO (Either Text SpellResult)
 revisionSpell cfg txt = do
   response' <- try @SomeException . httpLBS . buildGetRequest cfg $ txt
   case response' of
-    Left e -> pure . Left . T.pack . displayException $  e 
+    Left e -> pure . Left . T.pack . displayException $ e
     Right response -> do
       let status = getResponseStatusCode response
       let body = eitherDecode @SpellResult $ getResponseBody response
-      case (status , body) of
+      case (status, body) of
         (404, _) -> pure $ Left "spellservice 404"
         (301, _) -> pure $ Left "spellservice 301"
         (_, Right spellresult) -> pure $ Right spellresult
@@ -44,5 +44,6 @@ buildGetRequest (MkConfigYandexService {..}) txt =
       setRequestSecure cSecure $
         setRequestQueryString [("text", Just . encodeUtf8 $ txt)] $
           setRequestPath (encodeUtf8 cPath) $
-            setRequestPort cPort
+            setRequestPort
+              cPort
               defaultRequest

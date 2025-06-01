@@ -3,10 +3,10 @@ module Handlers.Database.Spell.Get (getAllSpells) where
 import Control.Exception (displayException)
 import Control.Monad (when)
 import Data.Either (isLeft)
+import Data.Text as T (Text, pack)
 import Handlers.Database.Spell (Handle (..))
 import Handlers.Logger (Log (..), logMessage)
-import Data.Text as T (Text, pack)
-import Web.DTO.Spell (SpellToWeb(..))
+import Web.DTO.Spell (SpellToWeb (..))
 import Web.Types (Client, FilterBy)
 
 getAllSpells :: (Monad m) => Handle m -> Client -> Maybe FilterBy -> m (Either Text [SpellToWeb])

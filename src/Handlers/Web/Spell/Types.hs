@@ -1,8 +1,10 @@
 {-# LANGUAGE DuplicateRecordFields #-}
-module Handlers.Web.Spell.Types  (SpellInternal(..),PhraseInternal(..), CheckSpellInternal(..)) where
-import Data.Text (Text)
-import Web.Types(Client, SpellResult)
+
+module Handlers.Web.Spell.Types (SpellInternal (..), PhraseInternal (..), CheckSpellInternal (..)) where
+
 import Data.Int (Int64)
+import Data.Text (Text)
+import Web.Types (Client, SpellResult)
 
 data SpellInternal = SpellInternal
   { phrase :: Text,
