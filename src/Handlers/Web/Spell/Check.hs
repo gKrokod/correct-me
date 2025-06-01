@@ -6,11 +6,11 @@ import qualified Data.Text as T
 import Handlers.Database.Api (checkSpellBase)
 import Handlers.Logger (Log (..), logMessage)
 import Handlers.Web.Spell (Handle (..))
-import Handlers.Web.Spell.Types (CheckSpellInternal(..))
+import Handlers.Web.Spell.Types (CheckSpellInternal (..))
 import Network.Wai (Request, Response)
-import Web.DTO.Spell  (CheckSpellFromWeb(..), webToCheckSpellFromWeb)
+import Web.DTO.Spell (CheckSpellFromWeb (..), webToCheckSpellFromWeb)
+import Web.Types (Client, Id(..), TextPhrase(..))
 import qualified Web.Utils as WU
-import Web.Types(Client)
 
 checkSpell :: (Monad m) => Client -> Handle m -> Request -> m Response
 checkSpell user h req = do
@@ -29,7 +29,7 @@ checkSpell user h req = do
       tryCheckSpell <-
         checkSpellBase
           baseHandle
-          ( CheckSpellInternal { idSpell = id, client = user, phrase = phrase } )
+          (CheckSpellInternal {idSpell = MkId id, client = user, phrase = MkTextPhrase phrase})
       case tryCheckSpell of
         Right _ ->
           pure WU.response200

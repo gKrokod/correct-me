@@ -1,13 +1,13 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 
-module Web.DTO.Spell (spellsToWeb, PhraseToWeb(..), SpellToWeb(..), webToPhrase, PhraseFromWeb(..), AnotherPhraseFromWeb(..),webToAnotherPhrase, CheckSpellFromWeb(..), webToCheckSpellFromWeb) where
+module Web.DTO.Spell (spellsToWeb, PhraseToWeb (..), SpellToWeb (..), webToPhrase, PhraseFromWeb (..), AnotherPhraseFromWeb (..), webToAnotherPhrase, CheckSpellFromWeb (..), webToCheckSpellFromWeb) where
 
 import Data.Aeson (FromJSON, ToJSON, eitherDecodeStrict, encode)
 import Data.Binary.Builder (Builder, fromLazyByteString)
 import qualified Data.ByteString as B
-import  Data.Text (Text)
-import GHC.Generics (Generic)
 import Data.Int (Int64)
+import Data.Text (Text)
+import GHC.Generics (Generic)
 import Web.Types (SpellResult)
 
 data PhraseToWeb = PhraseToWeb
@@ -28,10 +28,10 @@ data SpellToWeb = SpellToWeb
   deriving anyclass (ToJSON)
 
 spellsToWeb :: [SpellToWeb] -> Builder
-spellsToWeb = fromLazyByteString . encode @[SpellToWeb] 
+spellsToWeb = fromLazyByteString . encode @[SpellToWeb]
 
 newtype PhraseFromWeb = PhraseFromWeb
-  { phrase :: Text}
+  {phrase :: Text}
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
 
@@ -40,7 +40,8 @@ webToPhrase = eitherDecodeStrict @PhraseFromWeb
 
 data AnotherPhraseFromWeb = AnotherPhraseFromWeb
   { id :: Int64,
-    phrase :: Text}
+    phrase :: Text
+  }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
 
@@ -49,7 +50,8 @@ webToAnotherPhrase = eitherDecodeStrict @AnotherPhraseFromWeb
 
 data CheckSpellFromWeb = CheckSpellFromWeb
   { id :: Int64,
-    phrase :: Text}
+    phrase :: Text
+  }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
 

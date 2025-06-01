@@ -1,10 +1,10 @@
 module Handlers.Web.Spell (Handle (..)) where
 
 import qualified Data.ByteString as B
+import Data.Text (Text)
 import qualified Handlers.Database.Spell
 import qualified Handlers.Logger
 import Network.Wai (Request)
-import Data.Text (Text)
 import Web.Types (SpellResult)
 
 data Handle m = Handle

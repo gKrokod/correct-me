@@ -2,17 +2,17 @@
 
 module Handlers.Web.Spell.Create (createSpell) where
 
+import Control.Monad
+import Data.Either
 import qualified Data.Text as T
 import Handlers.Database.Api (createSpellBase)
 import Handlers.Logger (Log (..), logMessage)
 import Handlers.Web.Spell (Handle (..))
 import Handlers.Web.Spell.Types (SpellInternal (..))
 import Network.Wai (Request, Response)
-import Web.DTO.Spell  (PhraseFromWeb(..), webToPhrase)
+import Web.DTO.Spell (PhraseFromWeb (..), webToPhrase)
+import Web.Types (Client, TextPhrase(..))
 import qualified Web.Utils as WU
-import Web.Types(Client)
-import Data.Either
-import Control.Monad
 
 createSpell :: (Monad m) => Client -> Handle m -> Request -> m Response
 createSpell author h req = do
@@ -24,13 +24,13 @@ createSpell author h req = do
       logMessage logHandle Error (T.pack e)
       pure (WU.response400 . T.pack $ e)
     Right (PhraseFromWeb phrase) -> do
-      revi <- revisionSpell h phrase 
+      revi <- revisionSpell h phrase
       when (isLeft revi) (logMessage logHandle Warning (fromLeft "function revisionSpell fail" revi))
       tryCreateSpell <-
         createSpellBase
           baseHandle
           ( SpellInternal
-              { phrase = phrase,
+              { phrase = MkTextPhrase phrase,
                 author = author,
                 revision = fromRight [] revi
               }

@@ -11,18 +11,16 @@
 {-# OPTIONS_GHC -ddump-splices #-}
 {-# OPTIONS_GHC -ddump-to-file #-}
 
-module Database.Migrations.Migrationv0 (EntityField(..), User(..),Phrase(..),Spelling(..), Spell(..), migrateVer0, Unique(..))  where
+module Database.Migrations.Migrationv0 (EntityField (..), User (..), Phrase (..), Spelling (..), Spell (..), migrateVer0, Unique (..)) where
 
 import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import Database.Migrations.Type (MyMigration (..), createMigrateTable)
-import Database.Persist.TH (migrateModels)
 import Database.Persist.Class (EntityField (..), Unique (..))
+import Database.Persist.TH (migrateModels)
 import qualified Database.Persist.TH as PTH
 import GHC.Generics (Generic)
 import Web.Types (SpellResult)
-
-PTH.derivePersistFieldJSON "SpellResult"
 
 PTH.share
   [PTH.mkPersist PTH.sqlSettings, PTH.mkEntityDefList "createTablesForEntity"]
@@ -47,7 +45,5 @@ PTH.share
   deriving Eq Show Generic FromJSON ToJSON
 |]
 
-
 migrateVer0 :: MyMigration
 migrateVer0 = MkMigration {version = 0, description = "create all tables", content = migrateModels (createMigrateTable <> createTablesForEntity)}
-

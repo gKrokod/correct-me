@@ -1,10 +1,9 @@
-module Handlers.Web.Base (Handle(..))  where
+module Handlers.Web.Base (Handle (..)) where
 
 import Database.Persist.Postgresql (ConnectionString)
 import qualified Handlers.Logger
 import qualified Handlers.Web.Spell (Handle (..))
 import Web.Types (Client)
-
 
 data Handle m = Handle
   { connectionString :: ConnectionString,

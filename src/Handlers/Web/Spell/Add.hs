@@ -2,17 +2,17 @@
 
 module Handlers.Web.Spell.Add (addPhrase) where
 
+import Control.Monad
+import Data.Either
 import qualified Data.Text as T
 import Handlers.Database.Api (addPhraseBase)
 import Handlers.Logger (Log (..), logMessage)
 import Handlers.Web.Spell (Handle (..))
-import Handlers.Web.Spell.Types (SpellInternal (..), PhraseInternal(..))
+import Handlers.Web.Spell.Types (PhraseInternal (..), SpellInternal (..))
 import Network.Wai (Request, Response)
-import Web.DTO.Spell  (AnotherPhraseFromWeb(..), webToAnotherPhrase)
+import Web.DTO.Spell (AnotherPhraseFromWeb (..), webToAnotherPhrase)
+import Web.Types (Client, Id(..), TextPhrase(..))
 import qualified Web.Utils as WU
-import Web.Types(Client)
-import Data.Either
-import Control.Monad
 
 addPhrase :: (Monad m) => Client -> Handle m -> Request -> m Response
 addPhrase author h req = do
@@ -28,12 +28,12 @@ addPhrase author h req = do
       logMessage logHandle Error e
       pure (WU.response400 e)
     Right (AnotherPhraseFromWeb {..}) -> do
-      revi <- revisionSpell h phrase 
+      revi <- revisionSpell h phrase
       when (isLeft revi) (logMessage logHandle Warning (fromLeft "function revisionSpell fail" revi))
       tryAddPhrase <-
         addPhraseBase
           baseHandle
-          ( PhraseInternal { idSpell = id, anotherPhrase = SpellInternal { phrase = phrase, author = author, revision = fromRight [] revi } })
+          (PhraseInternal {idSpell = MkId id, anotherPhrase = SpellInternal {phrase = MkTextPhrase phrase, author = author, revision = fromRight [] revi}})
       case tryAddPhrase of
         Right _ ->
           pure WU.response200
